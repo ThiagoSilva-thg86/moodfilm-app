@@ -38,13 +38,29 @@ export default function Navbar() {
         </div>
 
         <div className={styles.userArea}>
-          <div className={styles.avatar} aria-hidden="true">
-            {(currentUser?.displayName || currentUser?.email || "U")[0].toUpperCase()}
+          <div className={styles.userProfileWrapper}>
+            <Link
+              to="/profile"
+              className={`${styles.userProfileLink} ${location.pathname === "/profile" ? styles.userProfileLinkActive : ""}`}
+              id="btn-user-profile"
+              title="Gerenciar seu perfil e configurações de conta"
+            >
+              <div className={styles.avatar} aria-hidden="true">
+                {(currentUser?.displayName || currentUser?.email || "U")[0].toUpperCase()}
+              </div>
+              <span className={styles.userName}>
+                {currentUser?.displayName || currentUser?.email}
+              </span>
+              <span className={styles.gearIcon}>⚙️</span>
+            </Link>
+
+            {/* Tooltip ao passar o mouse */}
+            <div className={styles.tooltipBox}>
+              Gerenciar seu perfil e configurações de conta
+            </div>
           </div>
-          <span className={styles.userName}>
-            {currentUser?.displayName || currentUser?.email}
-          </span>
-          <button id="btn-logout" className={styles.logoutBtn} onClick={handleLogout}>
+
+          <button id="btn-logout" className={styles.logoutBtn} onClick={handleLogout} title="Sair da conta">
             Sair
           </button>
         </div>

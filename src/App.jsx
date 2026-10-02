@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -26,6 +27,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <Analytics />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
               </PrivateRoute>
             }
           />
