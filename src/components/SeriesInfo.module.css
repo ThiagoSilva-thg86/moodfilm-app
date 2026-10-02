@@ -1,0 +1,219 @@
+.wrapper {
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 14px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.header {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.poster {
+  width: 60px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.mainInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.topRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.seriesName {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+
+.year {
+  font-size: 0.75rem;
+  color: rgba(167, 139, 250, 0.7);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  border: 1px solid;
+  font-size: 0.72rem;
+  font-weight: 700;
+  width: fit-content;
+  letter-spacing: 0.02em;
+}
+
+.statsRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  min-width: 50px;
+}
+
+.statNum {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #c4b5fd;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.overview {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Seasons */
+.seasons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.seasonsTitle {
+  margin: 0 0 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.seasonItem {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.seasonBtn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.seasonBtn:hover, .seasonBtnOpen {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.seasonName {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.seasonMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.chevron {
+  font-size: 0.6rem;
+  color: rgba(167, 139, 250, 0.6);
+}
+
+/* Episode list */
+.episodeList {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.episodeList::-webkit-scrollbar { width: 3px; }
+.episodeList::-webkit-scrollbar-track { background: transparent; }
+.episodeList::-webkit-scrollbar-thumb { background: rgba(167, 139, 250, 0.3); border-radius: 2px; }
+
+.episode {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.episode:hover { background: rgba(255, 255, 255, 0.04); }
+
+.epNum {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(167, 139, 250, 0.7);
+  min-width: 28px;
+  flex-shrink: 0;
+}
+
+.epName {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

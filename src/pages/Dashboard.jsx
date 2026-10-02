@@ -53,7 +53,11 @@ export default function Dashboard() {
     let result = [...entries];
     if (filters.type !== "all") result = result.filter((e) => e.type === filters.type);
     if (filters.status !== "all") result = result.filter((e) => e.status === filters.status);
-    if (filters.genre !== "all") result = result.filter((e) => e.genre === filters.genre);
+    if (filters.genre !== "all") result = result.filter((e) => {
+      // Suporte a formato antigo (string) e novo (array)
+      const genres = Array.isArray(e.genres) ? e.genres : e.genre ? [e.genre] : [];
+      return genres.includes(filters.genre);
+    });
     if (filters.search) {
       const q = filters.search.toLowerCase();
       result = result.filter((e) => e.title.toLowerCase().includes(q));

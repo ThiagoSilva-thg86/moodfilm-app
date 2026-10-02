@@ -26,8 +26,21 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
     ? [entry.mood]
     : [];
 
+  // Suporte a formato antigo (string) e novo (array)
+  const genres = Array.isArray(entry.genres)
+    ? entry.genres
+    : entry.genre
+    ? [entry.genre]
+    : [];
+
+  const seriesData = entry.seriesData || null;
+
   return (
     <article className={styles.card}>
+      {/* Poster da série (TMDB) */}
+      {seriesData?.poster && (
+        <img src={seriesData.poster} alt={entry.title} className={styles.seriesPoster} />
+      )}
       <div className={styles.header}>
         <div className={styles.typeBadge}>
           {entry.type === "Filme" ? "🎥" : "📺"} {entry.type}
@@ -42,7 +55,29 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
 
       <h3 className={styles.title}>{entry.title}</h3>
 
-      {entry.genre && <span className={styles.genre}>{entry.genre}</span>}
+      {/* Info TMDB da série */}
+      {seriesData && (
+        <div className={styles.seriesMeta}>
+          {seriesData.status && (
+            <span className={`${styles.seriesStatus} ${seriesData.status === "Em andamento" ? styles.statusActive : styles.statusEnded}`}>
+              {seriesData.status === "Em andamento" ? "🟢" : "⚫"} {seriesData.status}
+            </span>
+          )}
+          {seriesData.totalSeasons > 0 && (
+            <span className={styles.seriesStat}>📺 {seriesData.totalSeasons} temp. · {seriesData.totalEpisodes} ep.</span>
+          )}
+        </div>
+      )}
+
+      {genres.length > 0 && (
+        <div className={styles.genresRow}>
+          {genres.map((g, idx) => (
+            <span key={idx} className={idx === 0 ? styles.genrePrimaryBadge : styles.genreSecondaryBadge}>
+              {g}
+            </span>
+          ))}
+        </div>
+      )}
 
       {entry.rating > 0 && (
         <div className={styles.ratingRow}>

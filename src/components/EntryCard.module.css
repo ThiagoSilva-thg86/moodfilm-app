@@ -8,7 +8,54 @@
   gap: 0.6rem;
   transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
   cursor: default;
+  overflow: hidden;
 }
+
+/* Poster da série — aparece no topo do card */
+.seriesPoster {
+  width: calc(100% + 2.5rem);
+  margin: -1.25rem -1.25rem 0;
+  height: 120px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 20px 20px 0 0;
+  opacity: 0.85;
+}
+
+/* Meta info da série (status + temporadas) */
+.seriesMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.seriesStatus {
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid;
+}
+
+.statusActive {
+  color: #86efac;
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.statusEnded {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.08);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.seriesStat {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+
 
 .card:hover {
   transform: translateY(-3px);
@@ -55,15 +102,30 @@
   -webkit-box-orient: vertical;
 }
 
-.genre {
+.genresRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.genrePrimaryBadge {
   font-size: 0.75rem;
-  color: rgba(167, 139, 250, 0.9);
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 6px;
-  padding: 0.2rem 0.6rem;
-  display: inline-block;
-  width: fit-content;
+  color: #e9d5ff;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  border-radius: 20px;
+  padding: 0.18rem 0.65rem;
+  font-weight: 700;
+}
+
+.genreSecondaryBadge {
+  font-size: 0.72rem;
+  color: rgba(167, 139, 250, 0.7);
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 20px;
+  padding: 0.18rem 0.55rem;
+  font-weight: 500;
 }
 
 .ratingRow {
