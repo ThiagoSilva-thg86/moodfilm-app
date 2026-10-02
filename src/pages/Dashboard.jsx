@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import {
   getUserEntries,
@@ -24,6 +24,26 @@ const MOOD_OPTIONS = [
   { emoji: "🤩", label: "Obra-prima" },
 ];
 
+function getCustomGenres() {
+  try {
+    const raw = localStorage.getItem("moodfilm_custom_genres");
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomGenres(newGenres) {
+  try {
+    const existing = getCustomGenres();
+    const merged = Array.from(new Set([...existing, ...newGenres]));
+    localStorage.setItem("moodfilm_custom_genres", JSON.stringify(merged));
+    return merged;
+  } catch {
+    return [];
+  }
+}
+
 export default function Dashboard() {
   const { currentUser } = useAuth();
   const [entries, setEntries] = useState([]);
@@ -33,6 +53,17 @@ export default function Dashboard() {
   const [editingEntry, setEditingEntry] = useState(null);
   const [filters, setFilters] = useState({ type: "all", status: "all", genre: "all", search: "" });
   const [sortBy, setSortBy] = useState("newest");
+
+  // Lista dinâmica de gêneros combinando os padrões, customizados e das entradas
+  const allGenres = useMemo(() => {
+    const set = new Set(GENRES);
+    getCustomGenres().forEach((g) => g && set.add(g));
+    entries.forEach((e) => {
+      const list = Array.isArray(e.genres) ? e.genres : e.genre ? [e.genre] : [];
+      list.forEach((g) => g && set.add(g));
+    });
+    return Array.from(set);
+  }, [entries]);
 
   const loadEntries = useCallback(async () => {
     try {
@@ -68,6 +99,9 @@ export default function Dashboard() {
   }, [entries, filters, sortBy]);
 
   async function handleSave(data) {
+    if (data.genres && data.genres.length > 0) {
+      saveCustomGenres(data.genres);
+    }
     if (editingEntry) {
       await updateEntry(editingEntry.id, data);
     } else {
@@ -176,7 +210,7 @@ export default function Dashboard() {
               onChange={(e) => setFilters((f) => ({ ...f, genre: e.target.value }))}
             >
               <option value="all">Gênero</option>
-              {GENRES.map((g) => (
+              {allGenres.map((g) => (
                 <option key={g} value={g}>{g}</option>
               ))}
             </select>
@@ -238,7 +272,7 @@ export default function Dashboard() {
       {modalOpen && (
         <EntryModal
           entry={editingEntry}
-          genres={GENRES}
+          genres={allGenres}
           statusOptions={STATUS_OPTIONS}
           moodOptions={MOOD_OPTIONS}
           onSave={handleSave}

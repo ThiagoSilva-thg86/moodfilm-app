@@ -34,10 +34,18 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
     : [];
 
   const seriesData = entry.seriesData || null;
-  // Filme → backdrop (widescreen) é mais cinematográfico; Série → poster vertical
-  const bannerImg = entry.type === "Filme"
-    ? (seriesData?.backdrop || seriesData?.poster)
-    : seriesData?.poster;
+
+  // Capa oficial (poster vertical ou backdrop)
+  const coverImg = seriesData?.poster || seriesData?.backdrop || null;
+
+  // Nota TMDB e do Usuário
+  const tmdbScore = seriesData?.voteAverage > 0
+    ? seriesData.voteAverage
+    : seriesData?.vote_average > 0
+    ? seriesData.vote_average
+    : null;
+
+  const userRating = entry.rating > 0 ? entry.rating : null;
 
   function formatRuntime(minutes) {
     const h = Math.floor(minutes / 60);
@@ -47,10 +55,58 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
 
   return (
     <article className={styles.card}>
-      {/* Banner TMDB no topo do card */}
-      {bannerImg && (
-        <img src={bannerImg} alt={entry.title} className={styles.seriesPoster} />
+      {/* Capa da produção por completo + Notas */}
+      {coverImg && (
+        <div className={styles.coverContainer}>
+          <div
+            className={styles.coverBlurBg}
+            style={{ backgroundImage: `url(${coverImg})` }}
+            aria-hidden="true"
+          />
+          <img src={coverImg} alt={entry.title} className={styles.coverImg} />
+
+          {/* Badges de notas sobrepostos próximos da capa */}
+          <div className={styles.coverRatings}>
+            {tmdbScore != null && (
+              <div className={styles.tmdbBadge} title={`Nota TMDB: ${Number(tmdbScore).toFixed(1)}/10`}>
+                <span className={styles.tmdbLogo}>TMDB</span>
+                <span className={styles.tmdbScore}>{Number(tmdbScore).toFixed(1)}</span>
+              </div>
+            )}
+            <div
+              className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
+              title={userRating ? `Sua nota: ${userRating}/10` : "Você ainda não avaliou"}
+            >
+              <span className={userRating ? styles.userStar : styles.userStarEmpty}>⭐</span>
+              <span className={userRating ? styles.userScore : styles.userScoreEmpty}>
+                {userRating ? `${userRating}/10` : "s/ nota"}
+              </span>
+            </div>
+          </div>
+        </div>
       )}
+
+      {/* Se não houver capa, exibe as notas no corpo do card */}
+      {!coverImg && (tmdbScore != null || userRating != null) && (
+        <div className={styles.inlineRatings}>
+          {tmdbScore != null && (
+            <div className={styles.tmdbBadge} title={`Nota TMDB: ${Number(tmdbScore).toFixed(1)}/10`}>
+              <span className={styles.tmdbLogo}>TMDB</span>
+              <span className={styles.tmdbScore}>{Number(tmdbScore).toFixed(1)}</span>
+            </div>
+          )}
+          <div
+            className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
+            title={userRating ? `Sua nota: ${userRating}/10` : "Você ainda não avaliou"}
+          >
+            <span className={userRating ? styles.userStar : styles.userStarEmpty}>⭐</span>
+            <span className={userRating ? styles.userScore : styles.userScoreEmpty}>
+              {userRating ? `${userRating}/10` : "s/ nota"}
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <div className={styles.typeBadge}>
           {entry.type === "Filme" ? "🎥" : "📺"} {entry.type}
@@ -96,13 +152,6 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
               {g}
             </span>
           ))}
-        </div>
-      )}
-
-      {entry.rating > 0 && (
-        <div className={styles.ratingRow}>
-          <StarRating value={entry.rating} />
-          <span className={styles.ratingNum}>{entry.rating}/10</span>
         </div>
       )}
 

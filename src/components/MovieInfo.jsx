@@ -32,6 +32,12 @@ export default function MovieInfo({ data }) {
           )}
 
           <div className={styles.statsRow}>
+            {data.voteAverage > 0 && (
+              <div className={styles.stat}>
+                <span className={styles.statNum}>⭐ {data.voteAverage.toFixed(1)}</span>
+                <span className={styles.statLabel}>TMDB</span>
+              </div>
+            )}
             {data.runtime > 0 && (
               <div className={styles.stat}>
                 <span className={styles.statNum}>{formatRuntime(data.runtime)}</span>

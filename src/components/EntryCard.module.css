@@ -11,15 +11,141 @@
   overflow: hidden;
 }
 
-/* Poster da série — aparece no topo do card */
-.seriesPoster {
+/* Container da capa da produção — mantém a capa inteira (sem cortar) e notas sobrepostas */
+.coverContainer {
+  position: relative;
   width: calc(100% + 2.5rem);
-  margin: -1.25rem -1.25rem 0;
-  height: 120px;
-  object-fit: cover;
-  object-position: center top;
+  margin: -1.25rem -1.25rem 0.25rem -1.25rem;
+  height: 230px;
+  background: #090d16;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 20px 20px 0 0;
-  opacity: 0.85;
+}
+
+/* Fundo borrado usando a própria imagem para criar ambiente imersivo sem cortes secos */
+.coverBlurBg {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(20px) brightness(0.32);
+  transform: scale(1.15);
+  pointer-events: none;
+}
+
+/* Imagem da capa — aparece por completo (object-fit: contain), sem cortes */
+.coverImg {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .coverImg {
+  transform: scale(1.03);
+}
+
+/* Barra de notas sobre a capa */
+.coverRatings {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+/* Badge estilizado do TMDB */
+.tmdbBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(3, 37, 65, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(1, 180, 228, 0.5);
+  border-radius: 8px;
+  padding: 0.22rem 0.55rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tmdbLogo {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  background: linear-gradient(90deg, #90cea1 0%, #01b4e4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tmdbScore {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+/* Badge de nota do usuário */
+.userRatingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 8px;
+  padding: 0.22rem 0.55rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.userStar {
+  font-size: 0.78rem;
+}
+
+.userScore {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fcd34d;
+}
+
+.userRatingBadgeEmpty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.22rem 0.5rem;
+}
+
+.userStarEmpty {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.userScoreEmpty {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Notas inline caso não haja imagem de capa */
+.inlineRatings {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
 }
 
 /* Meta info da série (status + temporadas) */

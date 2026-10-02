@@ -62,12 +62,14 @@ export async function getSeriesDetails(seriesId) {
     name: data.name,
     year: data.first_air_date ? data.first_air_date.slice(0, 4) : "",
     poster: data.poster_path ? `https://image.tmdb.org/t/p/w300${data.poster_path}` : null,
+    backdrop: data.backdrop_path ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}` : null,
     overview: data.overview || "",
     status: mapStatus(data.status),
     totalSeasons: seasons.length,
     totalEpisodes: data.number_of_episodes || 0,
     genres: (data.genres || []).slice(0, 3).map((g) => g.name),
     seasons: seasonDetails,
+    voteAverage: data.vote_average ? Number(data.vote_average.toFixed(1)) : 0,
   };
 }
 
@@ -158,6 +160,7 @@ export async function getMovieDetails(movieId) {
     runtime: data.runtime || 0,          // duração em minutos
     genres: (data.genres || []).slice(0, 3).map((g) => g.name),
     tagline: data.tagline || "",
+    voteAverage: data.vote_average ? Number(data.vote_average.toFixed(1)) : 0,
   };
 }
 

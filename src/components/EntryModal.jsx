@@ -27,6 +27,22 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
   const suggestionsRef = useRef(null);
   const typeRef = useRef("Filme"); // ref para evitar stale closure no handleTitleChange
 
+  // Gêneros disponíveis: inclui padrões + existentes da entrada + importados do TMDB
+  const [availableGenres, setAvailableGenres] = useState(() => {
+    const set = new Set(genres || []);
+    if (entry) {
+      const eg = Array.isArray(entry.genres) ? entry.genres : entry.genre ? [entry.genre] : [];
+      eg.forEach((g) => g && set.add(g));
+    }
+    return Array.from(set);
+  });
+
+  useEffect(() => {
+    if (genres && genres.length > 0) {
+      setAvailableGenres((prev) => Array.from(new Set([...prev, ...genres])));
+    }
+  }, [genres]);
+
   useEffect(() => {
     if (entry) {
       // Compatibilidade com entradas antigas que tinham campo "mood" (string)
@@ -117,6 +133,10 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
         ? await getSeriesDetails(item.id)
         : await getMovieDetails(item.id);
       setSeriesData(details);
+      // Adiciona novos gêneros à lista disponível para seleção
+      if (details.genres && details.genres.length > 0) {
+        setAvailableGenres((prev) => Array.from(new Set([...prev, ...details.genres])));
+      }
       // Preenche gêneros automaticamente se vazio
       if (form.genres.length === 0 && details.genres?.length > 0) {
         setForm((prev) => ({ ...prev, title: details.name, genres: details.genres.slice(0, 3) }));
@@ -157,6 +177,9 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
 
   // Quando uma série é selecionada no TMDB
   function handleSeriesSelect(data) {
+    if (data.genres && data.genres.length > 0) {
+      setAvailableGenres((prev) => Array.from(new Set([...prev, ...data.genres])));
+    }
     setSeriesData(data);
     setForm((prev) => ({
       ...prev,
@@ -273,7 +296,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
               </span>
             </div>
             <div className={styles.genreGrid}>
-              {genres.map((g) => {
+              {availableGenres.map((g) => {
                 const selected = form.genres.includes(g);
                 const isPrimary = form.genres[0] === g;
                 const isDisabled = !selected && form.genres.length >= 3;

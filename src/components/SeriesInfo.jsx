@@ -41,6 +41,12 @@ export default function SeriesInfo({ data }) {
           </span>
 
           <div className={styles.statsRow}>
+            {data.voteAverage > 0 && (
+              <div className={styles.stat}>
+                <span className={styles.statNum}>⭐ {data.voteAverage.toFixed(1)}</span>
+                <span className={styles.statLabel}>TMDB</span>
+              </div>
+            )}
             {data.totalSeasons > 0 && (
               <div className={styles.stat}>
                 <span className={styles.statNum}>{data.totalSeasons}</span>
