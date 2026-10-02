@@ -106,6 +106,17 @@
 .select:focus { border-color: rgba(139, 92, 246, 0.6); }
 .select option { background: #1e1e3a; }
 
+.selectAnimation {
+  border-color: rgba(234, 179, 8, 0.45) !important;
+  color: #fde047 !important;
+  background: rgba(234, 179, 8, 0.09) !important;
+  font-weight: 600;
+}
+.selectAnimation option {
+  background: #242010;
+  color: #fef08a;
+}
+
 .addBtn {
   padding: 0.65rem 1.25rem;
   background: linear-gradient(135deg, #7c3aed, #2563eb);

@@ -6,6 +6,27 @@ import { searchSeries, getSeriesDetails, searchMovies, getMovieDetails } from ".
 
 const MAX_REVIEW = 500;
 
+export const ANIMATION_TYPES = [
+  {
+    id: "2D",
+    name: "2D",
+    fullName: "2D - Tradicional / Anime / 2D Autoral",
+    desc: "Tradicional · Anime · 2D Autoral",
+  },
+  {
+    id: "2.5D",
+    name: "2.5D",
+    fullName: "2.5D - Híbrido / NPR (Non-Photorealistic Rendering)",
+    desc: "Híbrido · NPR (Non-Photorealistic)",
+  },
+  {
+    id: "3D",
+    name: "3D",
+    fullName: "3D - CGI Ocidental / 3D Estilizado",
+    desc: "CGI Ocidental · 3D Estilizado",
+  },
+];
+
 export default function EntryModal({ entry, genres, statusOptions, moodOptions, onSave, onClose }) {
   const [form, setForm] = useState({
     title: "",
@@ -15,6 +36,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
     rating: 0,
     moods: [],   // array ordenado — índice 0 = humor principal (leva ⭐)
     review: "",
+    animationType: "", // 2D, 2.5D ou 3D
   });
   const [saving, setSaving] = useState(false);
   const [seriesData, setSeriesData] = useState(null);
@@ -63,6 +85,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
         rating: entry.rating || 0,
         moods,
         review: entry.review || "",
+        animationType: entry.animationType || "",
       });
       // Restaurar dados TMDB se existirem
       if (entry.seriesData) setSeriesData(entry.seriesData);
@@ -168,7 +191,11 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
     setForm((prev) => {
       const genres = prev.genres;
       if (genres.includes(val)) {
-        return { ...prev, genres: genres.filter((g) => g !== val) };
+        return {
+          ...prev,
+          genres: genres.filter((g) => g !== val),
+          animationType: val === "Animação" ? "" : prev.animationType,
+        };
       }
       if (genres.length >= 3) return prev;
       return { ...prev, genres: [...genres, val] };
@@ -339,6 +366,41 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
               ))}
             </div>
           </div>
+
+          {/* Sub-área para nicho/tipo de animação — abre automaticamente quando Animação está selecionada */}
+          {form.genres.includes("Animação") && (
+            <div className={styles.animationField}>
+              <div className={styles.animationHeader}>
+                <label className={styles.animationLabel}>
+                  🎨 Nicho / Tipo de Animação
+                </label>
+                <span className={styles.animationHint}>
+                  {form.animationType ? `${form.animationType} selecionado` : "Opcional — selecione o estilo"}
+                </span>
+              </div>
+              <div className={styles.animationGrid}>
+                {ANIMATION_TYPES.map((type) => {
+                  const isSelected = form.animationType === type.id;
+                  return (
+                    <button
+                      key={type.id}
+                      type="button"
+                      id={`modal-anim-${type.id.replace(".", "-")}`}
+                      className={`${styles.animationCard} ${isSelected ? styles.animationCardActive : ""}`}
+                      onClick={() => set("animationType", isSelected ? "" : type.id)}
+                      title={type.fullName}
+                    >
+                      <div className={styles.animationCardHeader}>
+                        <span className={styles.animationTag}>{type.name}</span>
+                        <span className={styles.animationCheck}>{isSelected ? "✓" : "+"}</span>
+                      </div>
+                      <div className={styles.animationSubtypes}>{type.desc}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Rating */}
           <div className={styles.field}>

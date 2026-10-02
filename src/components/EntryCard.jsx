@@ -152,6 +152,14 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
               {g}
             </span>
           ))}
+          {entry.animationType && (
+            <span
+              className={styles.animationBadge}
+              title={`Nicho de animação: ${entry.animationType}`}
+            >
+              🎨 {entry.animationType}
+            </span>
+          )}
         </div>
       )}
 

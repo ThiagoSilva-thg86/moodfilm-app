@@ -465,3 +465,95 @@
 
 .saveBtn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
 .saveBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Sub-área para estilo/nicho de Animação */
+.animationField {
+  background: rgba(234, 179, 8, 0.05);
+  border: 1px solid rgba(234, 179, 8, 0.22);
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.animationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.animationLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fde047 !important;
+}
+
+.animationHint {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.animationGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .animationGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.animationCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.65rem 0.6rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: inherit;
+}
+
+.animationCard:hover {
+  background: rgba(234, 179, 8, 0.1);
+  border-color: rgba(234, 179, 8, 0.4);
+  transform: translateY(-1px);
+}
+
+.animationCardActive {
+  background: rgba(234, 179, 8, 0.18) !important;
+  border-color: #facc15 !important;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.2);
+}
+
+.animationCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.animationTag {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fef08a;
+}
+
+.animationCheck {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #facc15;
+}
+
+.animationSubtypes {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.35;
+}
+

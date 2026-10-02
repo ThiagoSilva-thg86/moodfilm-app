@@ -265,6 +265,19 @@
   font-weight: 500;
 }
 
+.animationBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fde047;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  border-radius: 20px;
+  padding: 0.18rem 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .ratingRow {
   display: flex;
   align-items: center;

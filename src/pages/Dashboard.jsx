@@ -51,7 +51,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
-  const [filters, setFilters] = useState({ type: "all", status: "all", genre: "all", search: "" });
+  const [filters, setFilters] = useState({ type: "all", status: "all", genre: "all", animationType: "all", search: "" });
   const [sortBy, setSortBy] = useState("newest");
 
   // Lista dinâmica de gêneros combinando os padrões, customizados e das entradas
@@ -89,6 +89,9 @@ export default function Dashboard() {
       const genres = Array.isArray(e.genres) ? e.genres : e.genre ? [e.genre] : [];
       return genres.includes(filters.genre);
     });
+    if (filters.animationType !== "all") {
+      result = result.filter((e) => e.animationType === filters.animationType || e.animationType?.startsWith(filters.animationType));
+    }
     if (filters.search) {
       const q = filters.search.toLowerCase();
       result = result.filter((e) => e.title.toLowerCase().includes(q));
@@ -207,13 +210,35 @@ export default function Dashboard() {
               id="filter-genre"
               className={styles.select}
               value={filters.genre}
-              onChange={(e) => setFilters((f) => ({ ...f, genre: e.target.value }))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFilters((f) => ({
+                  ...f,
+                  genre: val,
+                  animationType: val === "Animação" ? f.animationType : "all",
+                }));
+              }}
             >
               <option value="all">Gênero</option>
               {allGenres.map((g) => (
                 <option key={g} value={g}>{g}</option>
               ))}
             </select>
+
+            {filters.genre === "Animação" && (
+              <select
+                id="filter-animation"
+                className={`${styles.select} ${styles.selectAnimation}`}
+                value={filters.animationType}
+                onChange={(e) => setFilters((f) => ({ ...f, animationType: e.target.value }))}
+                title="Filtrar por estilo/nicho de animação"
+              >
+                <option value="all">🎨 Todos os nichos</option>
+                <option value="2D">2D — Tradicional / Anime / 2D Autoral</option>
+                <option value="2.5D">2.5D — Híbrido / NPR</option>
+                <option value="3D">3D — CGI Ocidental / 3D Estilizado</option>
+              </select>
+            )}
 
             <select
               id="sort-select"
