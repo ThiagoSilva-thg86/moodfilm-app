@@ -65,14 +65,8 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
           />
           <img src={coverImg} alt={entry.title} className={styles.coverImg} />
 
-          {/* Badges de notas sobrepostos próximos da capa */}
+          {/* Badges de notas sobrepostos na vertical (⭐ em cima, TMDB embaixo) */}
           <div className={styles.coverRatings}>
-            {tmdbScore != null && (
-              <div className={styles.tmdbBadge} title={`Nota TMDB: ${Number(tmdbScore).toFixed(1)}/10`}>
-                <span className={styles.tmdbLogo}>TMDB</span>
-                <span className={styles.tmdbScore}>{Number(tmdbScore).toFixed(1)}</span>
-              </div>
-            )}
             <div
               className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
               title={userRating ? `Sua nota: ${userRating}/10` : "Você ainda não avaliou"}
@@ -82,6 +76,12 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
                 {userRating ? `${userRating}/10` : "s/ nota"}
               </span>
             </div>
+            {tmdbScore != null && (
+              <div className={styles.tmdbBadge} title={`Nota TMDB: ${Number(tmdbScore).toFixed(1)}/10`}>
+                <span className={styles.tmdbLogo}>TMDB</span>
+                <span className={styles.tmdbScore}>{Number(tmdbScore).toFixed(1)}</span>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -89,12 +89,6 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
       {/* Se não houver capa, exibe as notas no corpo do card */}
       {!coverImg && (tmdbScore != null || userRating != null) && (
         <div className={styles.inlineRatings}>
-          {tmdbScore != null && (
-            <div className={styles.tmdbBadge} title={`Nota TMDB: ${Number(tmdbScore).toFixed(1)}/10`}>
-              <span className={styles.tmdbLogo}>TMDB</span>
-              <span className={styles.tmdbScore}>{Number(tmdbScore).toFixed(1)}</span>
-            </div>
-          )}
           <div
             className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
             title={userRating ? `Sua nota: ${userRating}/10` : "Você ainda não avaliou"}
@@ -104,6 +98,12 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
               {userRating ? `${userRating}/10` : "s/ nota"}
             </span>
           </div>
+          {tmdbScore != null && (
+            <div className={styles.tmdbBadge} title={`Nota TMDB: ${Number(tmdbScore).toFixed(1)}/10`}>
+              <span className={styles.tmdbLogo}>TMDB</span>
+              <span className={styles.tmdbScore}>{Number(tmdbScore).toFixed(1)}</span>
+            </div>
+          )}
         </div>
       )}
 

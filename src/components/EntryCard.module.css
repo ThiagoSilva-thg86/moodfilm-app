@@ -54,17 +54,16 @@
   transform: scale(1.03);
 }
 
-/* Barra de notas sobre a capa */
+/* Barra de notas sobre a capa — empilhadas na vertical no canto para não cobrir o centro da capa */
 .coverRatings {
   position: absolute;
-  bottom: 0.6rem;
-  left: 0.75rem;
-  right: 0.75rem;
+  bottom: 0.65rem;
+  left: 0.65rem;
   z-index: 2;
   display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
 }
 
 /* Badge estilizado do TMDB */
