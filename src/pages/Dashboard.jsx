@@ -23,6 +23,14 @@ const MOOD_OPTIONS = [
   { emoji: "🤯", label: "Me surpreendeu" },
   { emoji: "😴", label: "Entediei" },
   { emoji: "🤩", label: "Obra-prima" },
+  { emoji: "😨", label: "Deu medo" },
+  { emoji: "😡", label: "Passei raiva" },
+  { emoji: "🔥", label: "Fiquei eufórico" },
+  { emoji: "💔", label: "Fiquei triste" },
+  { emoji: "🌧️", label: "Bateu melancolia" },
+  { emoji: "🤔", label: "Me fez pensar" },
+  { emoji: "😱", label: "Levei um susto" },
+  { emoji: "💪", label: "Saí motivado" },
 ];
 
 function getCustomGenres() {
