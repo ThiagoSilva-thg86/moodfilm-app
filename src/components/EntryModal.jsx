@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./EntryModal.module.css";
 import SeriesInfo from "./SeriesInfo";
-import { searchSeries, getSeriesDetails } from "../services/tmdbService";
+import MovieInfo from "./MovieInfo";
+import { searchSeries, getSeriesDetails, searchMovies, getMovieDetails } from "../services/tmdbService";
 
 const MAX_REVIEW = 500;
 
@@ -67,11 +68,11 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const doTmdbSearch = useCallback(async (q) => {
+  const doTmdbSearch = useCallback(async (q, type) => {
     if (q.length < 2) { setSuggestions([]); setShowSuggestions(false); return; }
     setLoadingSearch(true);
     try {
-      const res = await searchSeries(q);
+      const res = type === "Série" ? await searchSeries(q) : await searchMovies(q);
       setSuggestions(res);
       setShowSuggestions(res.length > 0);
     } catch (err) {
@@ -90,11 +91,11 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
   function handleTitleChange(e) {
     const val = e.target.value;
     set("title", val);
-    // Usa typeRef para evitar stale closure
-    if (typeRef.current === "Série") {
+    // Usa typeRef para evitar stale closure — busca filmes ou séries
+    if (typeRef.current === "Série" || typeRef.current === "Filme") {
       setSeriesData(null);
       clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => doTmdbSearch(val), 380);
+      debounceRef.current = setTimeout(() => doTmdbSearch(val, typeRef.current), 380);
     }
   }
 
@@ -106,13 +107,15 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
     setShowSuggestions(false);
   }
 
-  async function handleSuggestionSelect(series) {
+  async function handleSuggestionSelect(item) {
     setShowSuggestions(false);
     setSuggestions([]);
-    set("title", series.name);
+    set("title", item.name);
     setLoadingDetails(true);
     try {
-      const details = await getSeriesDetails(series.id);
+      const details = typeRef.current === "Série"
+        ? await getSeriesDetails(item.id)
+        : await getMovieDetails(item.id);
       setSeriesData(details);
       // Preenche gêneros automaticamente se vazio
       if (form.genres.length === 0 && details.genres?.length > 0) {
@@ -200,21 +203,19 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* Title — quando Série, dispara busca TMDB */}
+          {/* Title — busca TMDB para Filme e Série */}
           <div className={styles.field} style={{ position: "relative" }}>
             <label htmlFor="modal-title">
               Título *
-              {form.type === "Série" && (
-                <span className={styles.tmdbHint}>
-                  {loadingSearch ? " 🔍 buscando..." : loadingDetails ? " ⏳ carregando..." : " — comece a digitar para buscar"}
-                </span>
-              )}
+              <span className={styles.tmdbHint}>
+                {loadingSearch ? " 🔍 buscando..." : loadingDetails ? " ⏳ carregando..." : " — comece a digitar para buscar"}
+              </span>
             </label>
             <input
               ref={titleRef}
               id="modal-title"
               type="text"
-              placeholder={form.type === "Série" ? "Digite o nome da série..." : "Nome do filme ou série"}
+              placeholder={form.type === "Série" ? "Digite o nome da série..." : "Digite o nome do filme..."}
               value={form.title}
               onChange={handleTitleChange}
               onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
@@ -235,7 +236,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
                   >
                     {s.poster
                       ? <img src={s.poster} alt={s.name} className={styles.tmdbPoster} />
-                      : <div className={styles.tmdbPosterPlaceholder}>📺</div>
+                      : <div className={styles.tmdbPosterPlaceholder}>{form.type === "Série" ? "📺" : "🎥"}</div>
                     }
                     <div className={styles.tmdbOptionInfo}>
                       <span className={styles.tmdbName}>{s.name}</span>
@@ -247,8 +248,9 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
               </ul>
             )}
 
-            {/* Painel de info da série selecionada */}
-            {seriesData && <SeriesInfo data={seriesData} />}
+            {/* Painel de info após seleção: MovieInfo para filmes, SeriesInfo para séries */}
+            {seriesData && form.type === "Série" && <SeriesInfo data={seriesData} />}
+            {seriesData && form.type === "Filme" && <MovieInfo data={seriesData} />}
           </div>
 
           {/* Type row */}

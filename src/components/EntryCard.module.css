@@ -50,6 +50,12 @@
   border-color: rgba(148, 163, 184, 0.2);
 }
 
+.statusReleased {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
 .seriesStat {
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.4);

@@ -1,5 +1,5 @@
 // ============================================================
-// TMDB Service — busca de séries e detalhes (temporadas/episódios)
+// TMDB Service — busca de filmes, séries, temporadas e episódios
 // API gratuita: themoviedb.org/settings/api
 // ============================================================
 
@@ -101,13 +101,64 @@ async function getSeasonDetails(seriesId, seasonNumber) {
  */
 function mapStatus(status) {
   const map = {
+    // Séries
     "Returning Series": "Em andamento",
     "Ended": "Encerrada",
     "Canceled": "Cancelada",
     "In Production": "Em produção",
     "Planned": "Planejada",
+    // Filmes
+    "Released": "Lançado",
+    "Post Production": "Pós-produção",
+    "Rumored": "Rumor",
   };
   return map[status] || status || "Desconhecido";
+}
+
+/**
+ * Busca filmes pelo nome (autocomplete)
+ * @param {string} query
+ * @returns {Promise<Array>}
+ */
+export async function searchMovies(query) {
+  if (!query || query.length < 2) return [];
+  const url = `${BASE_URL}/search/movie?query=${encodeURIComponent(query)}&language=pt-BR&page=1`;
+  const res = await fetch(url, authHeaders());
+  if (!res.ok) throw new Error(`Erro ao buscar filmes (${res.status})`);
+  const data = await res.json();
+  return (data.results || []).slice(0, 6).map((m) => ({
+    id: m.id,
+    name: m.title,
+    year: m.release_date ? m.release_date.slice(0, 4) : "",
+    poster: m.poster_path ? `${IMG_BASE}${m.poster_path}` : null,
+    overview: m.overview || "",
+    voteAverage: m.vote_average || 0,
+  }));
+}
+
+/**
+ * Busca detalhes completos de um filme
+ * @param {number} movieId
+ * @returns {Promise<Object>}
+ */
+export async function getMovieDetails(movieId) {
+  const url = `${BASE_URL}/movie/${movieId}?language=pt-BR`;
+  const res = await fetch(url, authHeaders());
+  if (!res.ok) throw new Error(`Erro ao buscar detalhes do filme (${res.status})`);
+  const data = await res.json();
+
+  return {
+    id: data.id,
+    name: data.title,
+    year: data.release_date ? data.release_date.slice(0, 4) : "",
+    poster: data.poster_path ? `https://image.tmdb.org/t/p/w300${data.poster_path}` : null,
+    backdrop: data.backdrop_path ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}` : null,
+    overview: data.overview || "",
+    status: mapStatus(data.status),
+    runtime: data.runtime || 0,          // duração em minutos
+    genres: (data.genres || []).slice(0, 3).map((g) => g.name),
+    tagline: data.tagline || "",
+  };
 }
 
 export { IMG_BASE };

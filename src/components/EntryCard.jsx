@@ -34,12 +34,22 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
     : [];
 
   const seriesData = entry.seriesData || null;
+  // Filme → backdrop (widescreen) é mais cinematográfico; Série → poster vertical
+  const bannerImg = entry.type === "Filme"
+    ? (seriesData?.backdrop || seriesData?.poster)
+    : seriesData?.poster;
+
+  function formatRuntime(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return h > 0 ? `${h}h ${m}min` : `${m}min`;
+  }
 
   return (
     <article className={styles.card}>
-      {/* Poster da série (TMDB) */}
-      {seriesData?.poster && (
-        <img src={seriesData.poster} alt={entry.title} className={styles.seriesPoster} />
+      {/* Banner TMDB no topo do card */}
+      {bannerImg && (
+        <img src={bannerImg} alt={entry.title} className={styles.seriesPoster} />
       )}
       <div className={styles.header}>
         <div className={styles.typeBadge}>
@@ -55,16 +65,26 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
 
       <h3 className={styles.title}>{entry.title}</h3>
 
-      {/* Info TMDB da série */}
+      {/* Info TMDB — filmes e séries */}
       {seriesData && (
         <div className={styles.seriesMeta}>
           {seriesData.status && (
-            <span className={`${styles.seriesStatus} ${seriesData.status === "Em andamento" ? styles.statusActive : styles.statusEnded}`}>
-              {seriesData.status === "Em andamento" ? "🟢" : "⚫"} {seriesData.status}
+            <span className={`${styles.seriesStatus} ${
+              seriesData.status === "Em andamento" ? styles.statusActive :
+              seriesData.status === "Lançado"      ? styles.statusReleased :
+              styles.statusEnded
+            }`}>
+              {seriesData.status === "Em andamento" ? "🟢" :
+               seriesData.status === "Lançado"      ? "✅" : "⚫"} {seriesData.status}
             </span>
           )}
+          {/* Séries: temporadas e episódios */}
           {seriesData.totalSeasons > 0 && (
-            <span className={styles.seriesStat}>📺 {seriesData.totalSeasons} temp. · {seriesData.totalEpisodes} ep.</span>
+            <span className={styles.seriesStat}>📺 {seriesData.totalSeasons} temp. · {seriesData.totalEpisodes} ep.</span>
+          )}
+          {/* Filmes: duração */}
+          {seriesData.runtime > 0 && (
+            <span className={styles.seriesStat}>⏱ {formatRuntime(seriesData.runtime)}</span>
           )}
         </div>
       )}
