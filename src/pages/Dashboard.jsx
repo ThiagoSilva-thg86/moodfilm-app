@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
   getUserEntries,
@@ -252,9 +253,14 @@ export default function Dashboard() {
             </select>
           </div>
 
-          <button id="btn-add-entry" className={styles.addBtn} onClick={openNew}>
-            + Adicionar
-          </button>
+          <div className={styles.actionGroup}>
+            <Link to="/analytics" className={styles.analyticsBtn} title="Ver Dashboard Analítico com gráficos">
+              📊 Analytics
+            </Link>
+            <button id="btn-add-entry" className={styles.addBtn} onClick={openNew}>
+              + Adicionar
+            </button>
+          </div>
         </section>
 
         {/* Content */}

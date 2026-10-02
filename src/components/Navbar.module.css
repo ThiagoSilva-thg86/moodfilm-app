@@ -17,10 +17,17 @@
   justify-content: space-between;
 }
 
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
 }
 
 .brandIcon { font-size: 1.4rem; }
@@ -32,6 +39,33 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navLink {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.navLink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.navLinkActive {
+  color: #c4b5fd !important;
+  background: rgba(167, 139, 250, 0.15) !important;
+  border: 1px solid rgba(167, 139, 250, 0.3);
 }
 
 .userArea {

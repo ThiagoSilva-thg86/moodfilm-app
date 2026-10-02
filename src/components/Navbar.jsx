@@ -1,10 +1,11 @@
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function handleLogout() {
     await logout();
@@ -14,9 +15,26 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar} role="navigation" aria-label="Navegação principal">
       <div className={styles.inner}>
-        <div className={styles.brand}>
-          <span className={styles.brandIcon}>🎬</span>
-          <span className={styles.brandName}>MoodFilm</span>
+        <div className={styles.brandGroup}>
+          <Link to="/" className={styles.brand}>
+            <span className={styles.brandIcon}>🎬</span>
+            <span className={styles.brandName}>MoodFilm</span>
+          </Link>
+
+          <div className={styles.navLinks}>
+            <Link
+              to="/"
+              className={`${styles.navLink} ${location.pathname === "/" ? styles.navLinkActive : ""}`}
+            >
+              🎬 Diário
+            </Link>
+            <Link
+              to="/analytics"
+              className={`${styles.navLink} ${location.pathname === "/analytics" ? styles.navLinkActive : ""}`}
+            >
+              📊 Analytics
+            </Link>
+          </div>
         </div>
 
         <div className={styles.userArea}>
