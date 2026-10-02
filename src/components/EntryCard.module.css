@@ -54,16 +54,21 @@
   transform: scale(1.03);
 }
 
-/* Barra de notas sobre a capa — empilhadas na vertical no canto para não cobrir o centro da capa */
-.coverRatings {
+/* Barra de notas na parte superior da capa: Usuário na esquerda, TMDB na direita */
+.coverTopBar {
   position: absolute;
-  bottom: 0.65rem;
+  top: 0.65rem;
   left: 0.65rem;
+  right: 0.65rem;
   z-index: 2;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.35rem;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.coverTopBar > * {
+  pointer-events: auto;
 }
 
 /* Badge estilizado do TMDB */
@@ -141,10 +146,11 @@
 /* Notas inline caso não haja imagem de capa */
 .inlineRatings {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 0.45rem;
   margin-top: 0.2rem;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
 /* Meta info da série (status + temporadas) */

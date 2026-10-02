@@ -65,8 +65,8 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
           />
           <img src={coverImg} alt={entry.title} className={styles.coverImg} />
 
-          {/* Badges de notas sobrepostos na vertical (⭐ em cima, TMDB embaixo) */}
-          <div className={styles.coverRatings}>
+          {/* Barra superior de notas sobre a capa: Usuário à esquerda, TMDB à direita */}
+          <div className={styles.coverTopBar}>
             <div
               className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
               title={userRating ? `Sua nota: ${userRating}/10` : "Você ainda não avaliou"}
