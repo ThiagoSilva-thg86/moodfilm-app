@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Regra para a coleção "entries"
+    // Cada usuário só pode ler, criar, atualizar e excluir
+    // documentos que pertencem a si mesmo (userId == auth.uid)
+    match /entries/{entryId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == resource.data.userId;
+
+      // Permite criar documentos onde o userId bate com o usuário logado
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+    }
+  }
+}

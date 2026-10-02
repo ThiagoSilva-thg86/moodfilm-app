@@ -1,0 +1,246 @@
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  getUserEntries,
+  createEntry,
+  updateEntry,
+  deleteEntry,
+} from "../services/entriesService";
+import EntryModal from "../components/EntryModal";
+import EntryCard from "../components/EntryCard";
+import Navbar from "../components/Navbar";
+import styles from "./Dashboard.module.css";
+
+const GENRES = ["Ação", "Comédia", "Drama", "Terror", "Romance", "Sci-Fi", "Animação", "Documentário", "Suspense", "Fantasia"];
+const STATUS_OPTIONS = ["Quero assistir", "Assistindo", "Assistido"];
+const MOOD_OPTIONS = [
+  { emoji: "😭", label: "Chorei" },
+  { emoji: "😂", label: "Ri muito" },
+  { emoji: "😍", label: "Adorei" },
+  { emoji: "😐", label: "Meh" },
+  { emoji: "😬", label: "Tenso" },
+  { emoji: "🤯", label: "Me surpreendeu" },
+  { emoji: "😴", label: "Entediei" },
+  { emoji: "🤩", label: "Obra-prima" },
+];
+
+export default function Dashboard() {
+  const { currentUser } = useAuth();
+  const [entries, setEntries] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [filters, setFilters] = useState({ type: "all", status: "all", genre: "all", search: "" });
+  const [sortBy, setSortBy] = useState("newest");
+
+  const loadEntries = useCallback(async () => {
+    try {
+      const data = await getUserEntries(currentUser.uid);
+      setEntries(data);
+    } catch (err) {
+      console.error("Erro ao carregar entradas:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser.uid]);
+
+  useEffect(() => {
+    loadEntries();
+  }, [loadEntries]);
+
+  useEffect(() => {
+    let result = [...entries];
+    if (filters.type !== "all") result = result.filter((e) => e.type === filters.type);
+    if (filters.status !== "all") result = result.filter((e) => e.status === filters.status);
+    if (filters.genre !== "all") result = result.filter((e) => e.genre === filters.genre);
+    if (filters.search) {
+      const q = filters.search.toLowerCase();
+      result = result.filter((e) => e.title.toLowerCase().includes(q));
+    }
+    if (sortBy === "rating") result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else if (sortBy === "title") result.sort((a, b) => a.title.localeCompare(b.title));
+    setFiltered(result);
+  }, [entries, filters, sortBy]);
+
+  async function handleSave(data) {
+    if (editingEntry) {
+      await updateEntry(editingEntry.id, data);
+    } else {
+      await createEntry(currentUser.uid, data);
+    }
+    setModalOpen(false);
+    setEditingEntry(null);
+    loadEntries();
+  }
+
+  async function handleDelete(id) {
+    if (window.confirm("Excluir esta entrada?")) {
+      await deleteEntry(id);
+      setEntries((prev) => prev.filter((e) => e.id !== id));
+    }
+  }
+
+  function openEdit(entry) {
+    setEditingEntry(entry);
+    setModalOpen(true);
+  }
+
+  function openNew() {
+    setEditingEntry(null);
+    setModalOpen(true);
+  }
+
+  const stats = {
+    total: entries.length,
+    watched: entries.filter((e) => e.status === "Assistido").length,
+    watching: entries.filter((e) => e.status === "Assistindo").length,
+    watchlist: entries.filter((e) => e.status === "Quero assistir").length,
+    avgRating: entries.filter((e) => e.rating).length
+      ? (entries.filter((e) => e.rating).reduce((s, e) => s + e.rating, 0) / entries.filter((e) => e.rating).length).toFixed(1)
+      : "—",
+  };
+
+  return (
+    <div className={styles.dashboard}>
+      <Navbar />
+
+      <main className={styles.main}>
+        {/* Stats bar */}
+        <section className={styles.statsBar} aria-label="Resumo">
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>{stats.total}</span>
+            <span className={styles.statLabel}>Total</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>{stats.watched}</span>
+            <span className={styles.statLabel}>✅ Assistidos</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>{stats.watching}</span>
+            <span className={styles.statLabel}>▶️ Assistindo</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>{stats.watchlist}</span>
+            <span className={styles.statLabel}>🔖 Na lista</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>{stats.avgRating}</span>
+            <span className={styles.statLabel}>⭐ Média</span>
+          </div>
+        </section>
+
+        {/* Filters & Search */}
+        <section className={styles.controls} aria-label="Filtros">
+          <input
+            id="search-input"
+            type="search"
+            placeholder="🔍 Buscar por título..."
+            className={styles.searchInput}
+            value={filters.search}
+            onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
+          />
+
+          <div className={styles.filterGroup}>
+            <select
+              id="filter-type"
+              className={styles.select}
+              value={filters.type}
+              onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}
+            >
+              <option value="all">🎬 Todos</option>
+              <option value="Filme">🎥 Filmes</option>
+              <option value="Série">📺 Séries</option>
+            </select>
+
+            <select
+              id="filter-status"
+              className={styles.select}
+              value={filters.status}
+              onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
+            >
+              <option value="all">Status</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+
+            <select
+              id="filter-genre"
+              className={styles.select}
+              value={filters.genre}
+              onChange={(e) => setFilters((f) => ({ ...f, genre: e.target.value }))}
+            >
+              <option value="all">Gênero</option>
+              {GENRES.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+
+            <select
+              id="sort-select"
+              className={styles.select}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="newest">Mais recentes</option>
+              <option value="rating">Melhor avaliados</option>
+              <option value="title">A–Z</option>
+            </select>
+          </div>
+
+          <button id="btn-add-entry" className={styles.addBtn} onClick={openNew}>
+            + Adicionar
+          </button>
+        </section>
+
+        {/* Content */}
+        {loading ? (
+          <div className={styles.emptyState}>
+            <div className={styles.spinner} />
+            <p>Carregando sua lista...</p>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🎭</span>
+            <p className={styles.emptyTitle}>
+              {entries.length === 0 ? "Sua lista está vazia" : "Nenhum resultado encontrado"}
+            </p>
+            <p className={styles.emptyHint}>
+              {entries.length === 0
+                ? "Comece adicionando um filme ou série!"
+                : "Tente ajustar os filtros."}
+            </p>
+            {entries.length === 0 && (
+              <button className={styles.addBtnEmpty} onClick={openNew}>
+                + Adicionar primeiro item
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className={styles.grid}>
+            {filtered.map((entry) => (
+              <EntryCard
+                key={entry.id}
+                entry={entry}
+                onEdit={() => openEdit(entry)}
+                onDelete={() => handleDelete(entry.id)}
+              />
+            ))}
+          </div>
+        )}
+      </main>
+
+      {modalOpen && (
+        <EntryModal
+          entry={editingEntry}
+          genres={GENRES}
+          statusOptions={STATUS_OPTIONS}
+          moodOptions={MOOD_OPTIONS}
+          onSave={handleSave}
+          onClose={() => { setModalOpen(false); setEditingEntry(null); }}
+        />
+      )}
+    </div>
+  );
+}
