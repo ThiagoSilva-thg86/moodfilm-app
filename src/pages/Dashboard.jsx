@@ -60,7 +60,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
-  const [filters, setFilters] = useState({ type: "all", status: "all", genre: "all", animationType: "all", search: "" });
+  const [filters, setFilters] = useState({ type: "all", status: "all", genre: "all", animationType: "all", mood: "all", search: "" });
   const [sortBy, setSortBy] = useState("newest");
 
   // Lista dinâmica de gêneros combinando os padrões, customizados e das entradas
@@ -100,6 +100,12 @@ export default function Dashboard() {
     });
     if (filters.animationType !== "all") {
       result = result.filter((e) => e.animationType === filters.animationType || e.animationType?.startsWith(filters.animationType));
+    }
+    if (filters.mood && filters.mood !== "all") {
+      result = result.filter((e) => {
+        const moods = Array.isArray(e.moods) ? e.moods : e.mood ? [e.mood] : [];
+        return moods.some((m) => m === filters.mood || m.includes(filters.mood));
+      });
     }
     if (filters.search) {
       const q = filters.search.toLowerCase();
@@ -183,6 +189,22 @@ export default function Dashboard() {
 
         {/* Filters & Search */}
         <section className={styles.controls} aria-label="Filtros">
+          {/* Filtro MoodFilm antes da busca por título */}
+          <select
+            id="filter-mood"
+            className={`${styles.select} ${styles.selectMoodFilm}`}
+            value={filters.mood}
+            onChange={(e) => setFilters((f) => ({ ...f, mood: e.target.value }))}
+            title="Filtrar por sentimento (MoodFilm)"
+          >
+            <option value="all">🎭 MoodFilm (Todos)</option>
+            {MOOD_OPTIONS.map((m) => (
+              <option key={m.label} value={m.label}>
+                {m.emoji} {m.label}
+              </option>
+            ))}
+          </select>
+
           <input
             id="search-input"
             type="search"
