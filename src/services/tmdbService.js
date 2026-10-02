@@ -4,8 +4,20 @@
 // ============================================================
 
 const BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const READ_TOKEN = import.meta.env.VITE_TMDB_READ_TOKEN;
 const IMG_BASE = "https://image.tmdb.org/t/p/w200";
+
+function authHeaders() {
+  if (!READ_TOKEN) {
+    console.warn("[TMDB] VITE_TMDB_READ_TOKEN não encontrado. Reinicie o servidor após adicionar ao .env");
+  }
+  return {
+    headers: {
+      Authorization: `Bearer ${READ_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+  };
+}
 
 /**
  * Busca séries pelo nome (autocomplete)
@@ -14,9 +26,9 @@ const IMG_BASE = "https://image.tmdb.org/t/p/w200";
  */
 export async function searchSeries(query) {
   if (!query || query.length < 2) return [];
-  const url = `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=pt-BR&page=1`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Erro ao buscar séries");
+  const url = `${BASE_URL}/search/tv?query=${encodeURIComponent(query)}&language=pt-BR&page=1`;
+  const res = await fetch(url, authHeaders());
+  if (!res.ok) throw new Error(`Erro ao buscar séries (${res.status})`);
   const data = await res.json();
   return (data.results || []).slice(0, 6).map((s) => ({
     id: s.id,
@@ -34,9 +46,9 @@ export async function searchSeries(query) {
  * @returns {Promise<Object>}
  */
 export async function getSeriesDetails(seriesId) {
-  const url = `${BASE_URL}/tv/${seriesId}?api_key=${API_KEY}&language=pt-BR&append_to_response=season/1,season/2,season/3,season/4,season/5`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Erro ao buscar detalhes da série");
+  const url = `${BASE_URL}/tv/${seriesId}?language=pt-BR`;
+  const res = await fetch(url, authHeaders());
+  if (!res.ok) throw new Error(`Erro ao buscar detalhes (${res.status})`);
   const data = await res.json();
 
   // Buscar detalhes de cada temporada (excluindo Temporada 0 = especiais)
@@ -64,8 +76,8 @@ export async function getSeriesDetails(seriesId) {
  */
 async function getSeasonDetails(seriesId, seasonNumber) {
   try {
-    const url = `${BASE_URL}/tv/${seriesId}/season/${seasonNumber}?api_key=${API_KEY}&language=pt-BR`;
-    const res = await fetch(url);
+    const url = `${BASE_URL}/tv/${seriesId}/season/${seasonNumber}?language=pt-BR`;
+    const res = await fetch(url, authHeaders());
     if (!res.ok) return { number: seasonNumber, episodes: [] };
     const data = await res.json();
     return {

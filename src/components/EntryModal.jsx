@@ -24,6 +24,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
   const debounceRef = useRef(null);
   const titleRef = useRef(null);
   const suggestionsRef = useRef(null);
+  const typeRef = useRef("Filme"); // ref para evitar stale closure no handleTitleChange
 
   useEffect(() => {
     if (entry) {
@@ -48,6 +49,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
       });
       // Restaurar dados TMDB se existirem
       if (entry.seriesData) setSeriesData(entry.seriesData);
+      if (entry.type) typeRef.current = entry.type;
     }
   }, [entry]);
 
@@ -72,8 +74,10 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
       const res = await searchSeries(q);
       setSuggestions(res);
       setShowSuggestions(res.length > 0);
-    } catch {
+    } catch (err) {
+      console.error("[TMDB] Erro na busca:", err);
       setSuggestions([]);
+      setShowSuggestions(false);
     } finally {
       setLoadingSearch(false);
     }
@@ -86,12 +90,20 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
   function handleTitleChange(e) {
     const val = e.target.value;
     set("title", val);
-    // Se for série, dispara busca TMDB com debounce
-    if (form.type === "Série") {
+    // Usa typeRef para evitar stale closure
+    if (typeRef.current === "Série") {
       setSeriesData(null);
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => doTmdbSearch(val), 380);
     }
+  }
+
+  function handleTypeChange(newType) {
+    typeRef.current = newType;
+    set("type", newType);
+    setSeriesData(null);
+    setSuggestions([]);
+    setShowSuggestions(false);
   }
 
   async function handleSuggestionSelect(series) {
