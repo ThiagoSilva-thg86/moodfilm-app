@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserEntries } from "../services/entriesService";
 import Navbar from "../components/Navbar";
+import { formatScore } from "../constants/technicalCriteria";
 import styles from "./Analytics.module.css";
 
 export default function Analytics() {
@@ -409,11 +410,11 @@ export default function Analytics() {
                 <h3>Distribuição das Suas Notas (Feeling 1 a 10)</h3>
                 <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                   {stats.avgUserRating && (
-                    <span className={styles.avgBadge}>Média Feeling: 💜 {stats.avgUserRating} / 10</span>
+                    <span className={styles.avgBadge}>Média Feeling: 💜 {formatScore(stats.avgUserRating)} / 10</span>
                   )}
                   {stats.avgTechRating && (
                     <span className={styles.avgBadge} style={{ borderColor: "rgba(139, 92, 246, 0.5)", color: "#c4b5fd" }}>
-                      Média Técnica: 🎬 {stats.avgTechRating} / 5 ★
+                      Média Técnica: 🎬 {formatScore(stats.avgTechRating)} / 5 ★
                     </span>
                   )}
                 </div>

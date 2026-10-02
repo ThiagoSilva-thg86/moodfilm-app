@@ -1,5 +1,5 @@
 import styles from "./EntryCard.module.css";
-import { calcTechnicalScore, formatTechnicalSummary } from "../constants/technicalCriteria";
+import { calcTechnicalScore, formatTechnicalSummary, formatScore } from "../constants/technicalCriteria";
 
 const STATUS_COLORS = {
   "Assistido":      { bg: "rgba(34,197,94,0.15)",  text: "#86efac", border: "rgba(34,197,94,0.3)" },
@@ -63,30 +63,17 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
           />
           <img src={coverImg} alt={entry.title} className={styles.coverImg} />
 
-          {/* Barra superior de notas sobre a capa */}
+          {/* Barra superior de notas sobre a capa: Apenas Feeling à esquerda e TMDB à direita */}
           <div className={styles.coverTopBar}>
-            <div className={styles.coverRatingsLeft}>
-              <div
-                className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
-                title={userRating ? `Feeling: ${userRating.toFixed(1)}/10` : "Você ainda não avaliou o feeling"}
-              >
-                <span className={userRating ? styles.userStar : styles.userStarEmpty}>⭐</span>
-                <span className={styles.badgeName}>Feeling</span>
-                <span className={userRating ? styles.userScore : styles.userScoreEmpty}>
-                  {userRating ? `${userRating.toFixed(1)}` : "—"}
-                </span>
-              </div>
-
-              {techScore != null && (
-                <div
-                  className={styles.techRatingBadge}
-                  title={`Nota Técnica: ${techScore.toFixed(1)}/5 ${techSummary ? `(${techSummary})` : ""}`}
-                >
-                  <span className={styles.techIcon}>🎬</span>
-                  <span className={styles.badgeName}>Técnica</span>
-                  <span className={styles.techScore}>{techScore.toFixed(1)}</span>
-                </div>
-              )}
+            <div
+              className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
+              title={userRating ? `Feeling: ${formatScore(userRating)}/10` : "Você ainda não avaliou o feeling"}
+            >
+              <span className={userRating ? styles.userStar : styles.userStarEmpty}>⭐</span>
+              <span className={styles.badgeName}>Feeling</span>
+              <span className={userRating ? styles.userScore : styles.userScoreEmpty}>
+                {userRating ? formatScore(userRating) : "—"}
+              </span>
             </div>
 
             {tmdbScore != null && (
@@ -99,31 +86,18 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
         </div>
       )}
 
-      {/* Se não houver capa, exibe as notas no topo do card */}
-      {!coverImg && (tmdbScore != null || userRating != null || techScore != null) && (
+      {/* Se não houver capa, exibe apenas Feeling e TMDB no topo do card */}
+      {!coverImg && (tmdbScore != null || userRating != null) && (
         <div className={styles.inlineRatings}>
-          <div className={styles.coverRatingsLeft}>
-            <div
-              className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
-              title={userRating ? `Feeling: ${userRating.toFixed(1)}/10` : "Você ainda não avaliou o feeling"}
-            >
-              <span className={userRating ? styles.userStar : styles.userStarEmpty}>⭐</span>
-              <span className={styles.badgeName}>Feeling</span>
-              <span className={userRating ? styles.userScore : styles.userScoreEmpty}>
-                {userRating ? `${userRating.toFixed(1)}` : "—"}
-              </span>
-            </div>
-
-            {techScore != null && (
-              <div
-                className={styles.techRatingBadge}
-                title={`Nota Técnica: ${techScore.toFixed(1)}/5 ${techSummary ? `(${techSummary})` : ""}`}
-              >
-                <span className={styles.techIcon}>🎬</span>
-                <span className={styles.badgeName}>Técnica</span>
-                <span className={styles.techScore}>{techScore.toFixed(1)}</span>
-              </div>
-            )}
+          <div
+            className={userRating ? styles.userRatingBadge : styles.userRatingBadgeEmpty}
+            title={userRating ? `Feeling: ${formatScore(userRating)}/10` : "Você ainda não avaliou o feeling"}
+          >
+            <span className={userRating ? styles.userStar : styles.userStarEmpty}>⭐</span>
+            <span className={styles.badgeName}>Feeling</span>
+            <span className={userRating ? styles.userScore : styles.userScoreEmpty}>
+              {userRating ? formatScore(userRating) : "—"}
+            </span>
           </div>
 
           {tmdbScore != null && (
@@ -158,7 +132,7 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
           >
             <span className={styles.ratingChipLabel}>💜 Feeling</span>
             <span className={styles.ratingChipValue}>
-              {userRating != null ? `${userRating.toFixed(1)} / 10` : "s/ nota"}
+              {userRating != null ? `${formatScore(userRating)} / 10` : "s/ nota"}
             </span>
           </div>
 
@@ -169,7 +143,7 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
             >
               <span className={styles.ratingChipLabel}>🎬 Nota Técnica</span>
               <span className={styles.ratingChipValue}>
-                {techScore.toFixed(1)} / 5 ★
+                {`${formatScore(techScore)} / 5 ★`}
               </span>
             </div>
           )}
@@ -227,13 +201,12 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
 
         return (
           <div className={styles.moodSection}>
-            {/* Tag MoodFilm = [emoji] [label] destacando o sentimento principal */}
+            {/* Tag MoodFilm [emoji] [label] destacando o sentimento principal sem sinal de igual */}
             <div
               className={styles.moodFilmTag}
               title={`Sentimento principal da obra: ${pLabel}`}
             >
               <span className={styles.moodFilmBrand}>MoodFilm</span>
-              <span className={styles.moodFilmEquals}>=</span>
               <span className={styles.moodFilmEmoji}>{pEmoji}</span>
               <span className={styles.moodFilmLabel}>{pLabel}</span>
             </div>

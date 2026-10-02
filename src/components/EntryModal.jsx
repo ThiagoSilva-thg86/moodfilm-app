@@ -3,7 +3,7 @@ import styles from "./EntryModal.module.css";
 import SeriesInfo from "./SeriesInfo";
 import MovieInfo from "./MovieInfo";
 import { searchSeries, getSeriesDetails, searchMovies, getMovieDetails } from "../services/tmdbService";
-import { TECHNICAL_CRITERIA, calcTechnicalScore } from "../constants/technicalCriteria";
+import { TECHNICAL_CRITERIA, calcTechnicalScore, formatScore } from "../constants/technicalCriteria";
 
 const MAX_REVIEW = 500;
 
@@ -456,7 +456,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
               <label htmlFor="modal-feeling-slider" className={styles.ratingTitleLabel}>
                 💜 Feeling (Sua Nota):{" "}
                 <strong className={styles.feelingScoreValue}>
-                  {form.rating > 0 ? `${Number(form.rating).toFixed(1)} / 10` : "Sem nota"}
+                  {form.rating > 0 ? `${formatScore(form.rating)} / 10` : "Sem nota"}
                 </strong>
               </label>
               {form.rating > 0 && (
@@ -544,7 +544,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
                   className={`${styles.presetChip} ${form.rating === val ? styles.presetChipActive : ""}`}
                   onClick={() => set("rating", val)}
                 >
-                  {val.toFixed(1)}
+                  {formatScore(val)}
                 </button>
               ))}
             </div>
@@ -561,7 +561,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
                   {(() => {
                     const score = calcTechnicalScore(form.technicalRatings);
                     return score != null
-                      ? `Nota Técnica: ${score.toFixed(1)} / 5.0 ★`
+                      ? `Nota Técnica: ${formatScore(score)} / 5 ★`
                       : "Nota Técnica: Sem notas";
                   })()}
                 </span>
@@ -590,7 +590,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
                         {criterion.icon} {criterion.label}
                       </span>
                       <span className={styles.criterionScore}>
-                        {currentVal > 0 ? `${currentVal.toFixed(1)} ★` : "—"}
+                        {currentVal > 0 ? `${formatScore(currentVal)} ★` : "—"}
                       </span>
                     </div>
 

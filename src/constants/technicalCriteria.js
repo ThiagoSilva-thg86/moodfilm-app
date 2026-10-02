@@ -48,6 +48,16 @@ export function calcTechnicalScore(ratings) {
 }
 
 /**
+ * Formata nota: se for número inteiro (ex: 4 ou 10), exibe sem casas decimais ("4", "10").
+ * Se tiver fração (ex: 4.5 ou 9.5), exibe com 1 casa decimal ("4.5", "9.5").
+ */
+export function formatScore(num) {
+  if (num == null || num === "" || isNaN(num)) return "";
+  const val = Number(num);
+  return Number.isInteger(val) ? String(val) : val.toFixed(1);
+}
+
+/**
  * Retorna um texto resumido com as notas dos critérios para exibição em tooltips
  */
 export function formatTechnicalSummary(ratings) {
@@ -55,7 +65,7 @@ export function formatTechnicalSummary(ratings) {
   return TECHNICAL_CRITERIA
     .map((c) => {
       const val = Number(ratings[c.key]) || 0;
-      return val > 0 ? `${c.icon} ${c.label.split(" ")[0]}: ${val.toFixed(1)}` : null;
+      return val > 0 ? `${c.icon} ${c.label.split(" ")[0]}: ${formatScore(val)}` : null;
     })
     .filter(Boolean)
     .join(" · ");
