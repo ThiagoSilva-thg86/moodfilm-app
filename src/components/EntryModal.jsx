@@ -3,6 +3,7 @@ import styles from "./EntryModal.module.css";
 import SeriesInfo from "./SeriesInfo";
 import MovieInfo from "./MovieInfo";
 import { searchSeries, getSeriesDetails, searchMovies, getMovieDetails } from "../services/tmdbService";
+import { TECHNICAL_CRITERIA, calcTechnicalScore } from "../constants/technicalCriteria";
 
 const MAX_REVIEW = 500;
 
@@ -33,7 +34,14 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
     type: "Filme",
     genres: [],  // array ordenado — até 3 gêneros
     status: "Quero assistir",
-    rating: 0,
+    rating: 0,   // Feeling: 0 a 10 com passo 0.5
+    technicalRatings: {
+      script: 0,
+      acting: 0,
+      direction: 0,
+      technical: 0,
+      soundtrack: 0,
+    },
     moods: [],   // array ordenado — índice 0 = humor principal (leva ⭐)
     review: "",
     animationType: "", // 2D, 2.5D ou 3D
@@ -77,12 +85,21 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
       if (Array.isArray(entry.genres)) genres = entry.genres;
       else if (entry.genre) genres = [entry.genre];
 
+      const rawTech = entry.technicalRatings || {};
+
       setForm({
         title:  entry.title  || "",
         type:   entry.type   || "Filme",
         genres,
         status: entry.status || "Quero assistir",
-        rating: entry.rating || 0,
+        rating: entry.rating != null ? Number(entry.rating) : 0,
+        technicalRatings: {
+          script: Number(rawTech.script) || 0,
+          acting: Number(rawTech.acting) || 0,
+          direction: Number(rawTech.direction) || 0,
+          technical: Number(rawTech.technical) || 0,
+          soundtrack: Number(rawTech.soundtrack) || 0,
+        },
         moods,
         review: entry.review || "",
         animationType: entry.animationType || "",
@@ -227,13 +244,44 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
     return idx; // -1 = não selecionado, 0 = principal, 1/2 = secundários
   }
 
+  function setTechRating(key, value) {
+    const num = Math.max(0, Math.min(5, Math.round(Number(value) * 2) / 2));
+    setForm((prev) => ({
+      ...prev,
+      technicalRatings: {
+        ...prev.technicalRatings,
+        [key]: num,
+      },
+    }));
+  }
+
+  function resetTechRatings() {
+    setForm((prev) => ({
+      ...prev,
+      technicalRatings: {
+        script: 0,
+        acting: 0,
+        direction: 0,
+        technical: 0,
+        soundtrack: 0,
+      },
+    }));
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!form.title.trim()) return;
     try {
       setSaving(true);
-      // Inclui dados do TMDB na entrada se houver
-      await onSave({ ...form, seriesData: seriesData || null });
+      const techScore = calcTechnicalScore(form.technicalRatings);
+      // Inclui dados do TMDB e dados de avaliação técnica
+      await onSave({
+        ...form,
+        rating: Number(form.rating) || 0,
+        technicalRatings: form.technicalRatings,
+        technicalScore: techScore,
+        seriesData: seriesData || null,
+      });
     } finally {
       setSaving(false);
     }
@@ -402,22 +450,215 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
             </div>
           )}
 
-          {/* Rating */}
+          {/* 1. FEELING (Nota do usuário de 0 a 10, passo de 0.5) */}
           <div className={styles.field}>
-            <label>Nota: <strong>{form.rating > 0 ? `${form.rating}/10` : "Sem nota"}</strong></label>
-            <div className={styles.starPicker}>
-              {Array.from({ length: 10 }, (_, i) => (
+            <div className={styles.ratingHeader}>
+              <label htmlFor="modal-feeling-slider" className={styles.ratingTitleLabel}>
+                💜 Feeling (Sua Nota):{" "}
+                <strong className={styles.feelingScoreValue}>
+                  {form.rating > 0 ? `${Number(form.rating).toFixed(1)} / 10` : "Sem nota"}
+                </strong>
+              </label>
+              {form.rating > 0 && (
                 <button
-                  key={i}
                   type="button"
-                  id={`modal-star-${i + 1}`}
-                  className={`${styles.starBtn} ${i < form.rating ? styles.starOn : ""}`}
-                  onClick={() => set("rating", form.rating === i + 1 ? 0 : i + 1)}
-                  aria-label={`Nota ${i + 1}`}
+                  id="modal-feeling-clear"
+                  className={styles.clearBtnSmall}
+                  onClick={() => set("rating", 0)}
+                  title="Remover nota de feeling"
                 >
-                  ★
+                  Limpar
+                </button>
+              )}
+            </div>
+
+            {/* Estrelas visuais para o Feeling (10 estrelas com suporte a meia estrela) */}
+            <div className={styles.feelingStarsRow} aria-label="Visualização em estrelas">
+              {Array.from({ length: 10 }, (_, i) => {
+                const starVal = i + 1;
+                const isFull = form.rating >= starVal;
+                const isHalf = form.rating === starVal - 0.5;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    id={`modal-feeling-star-${starVal}`}
+                    className={`${styles.starVisualBtn} ${
+                      isFull ? styles.starFull : isHalf ? styles.starHalf : styles.starEmpty
+                    }`}
+                    onClick={() => {
+                      if (form.rating === starVal) set("rating", starVal - 0.5);
+                      else if (form.rating === starVal - 0.5) set("rating", 0);
+                      else set("rating", starVal);
+                    }}
+                    title={`Nota ${starVal}`}
+                  >
+                    ★
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Slider de alta precisão 0 a 10 com passo 0.5 */}
+            <div className={styles.sliderControlRow}>
+              <button
+                type="button"
+                id="modal-feeling-minus"
+                className={styles.stepperBtn}
+                onClick={() => set("rating", Math.max(0, Number((form.rating - 0.5).toFixed(1))))}
+                disabled={form.rating <= 0}
+                title="Diminuir 0.5"
+              >
+                -0.5
+              </button>
+              <input
+                id="modal-feeling-slider"
+                type="range"
+                min="0"
+                max="10"
+                step="0.5"
+                value={form.rating}
+                onChange={(e) => set("rating", parseFloat(e.target.value))}
+                className={styles.ratingSlider}
+              />
+              <button
+                type="button"
+                id="modal-feeling-plus"
+                className={styles.stepperBtn}
+                onClick={() => set("rating", Math.min(10, Number((form.rating + 0.5).toFixed(1))))}
+                disabled={form.rating >= 10}
+                title="Aumentar 0.5"
+              >
+                +0.5
+              </button>
+            </div>
+
+            {/* Atalhos para notas fracionadas comuns */}
+            <div className={styles.presetChips}>
+              <span className={styles.presetLabel}>Atalhos:</span>
+              {[5.0, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0].map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  id={`modal-feeling-preset-${String(val).replace(".", "-")}`}
+                  className={`${styles.presetChip} ${form.rating === val ? styles.presetChipActive : ""}`}
+                  onClick={() => set("rating", val)}
+                >
+                  {val.toFixed(1)}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* 2. CRITÉRIOS DE AVALIAÇÃO TÉCNICA (0 a 5 estrelas, passo 0.5) */}
+          <div className={styles.technicalBox}>
+            <div className={styles.technicalHeader}>
+              <div className={styles.technicalTitleGroup}>
+                <label className={styles.technicalLabel}>
+                  🎬 Avaliação Técnica (5 Critérios)
+                </label>
+                <span className={styles.technicalAverageBadge}>
+                  {(() => {
+                    const score = calcTechnicalScore(form.technicalRatings);
+                    return score != null
+                      ? `Nota Técnica: ${score.toFixed(1)} / 5.0 ★`
+                      : "Nota Técnica: Sem notas";
+                  })()}
+                </span>
+              </div>
+              <button
+                type="button"
+                id="modal-tech-reset"
+                className={styles.clearBtnSmall}
+                onClick={resetTechRatings}
+                title="Zerar todos os critérios técnicos"
+              >
+                Zerar critérios
+              </button>
+            </div>
+            <p className={styles.technicalHint}>
+              Escala de 0 a 5 estrelas (passo 0.5). A Nota Técnica é calculada automaticamente como a média dos critérios avaliados.
+            </p>
+
+            <div className={styles.criteriaList}>
+              {TECHNICAL_CRITERIA.map((criterion) => {
+                const currentVal = Number(form.technicalRatings[criterion.key]) || 0;
+                return (
+                  <div key={criterion.key} className={styles.criterionRow}>
+                    <div className={styles.criterionInfo}>
+                      <span className={styles.criterionName}>
+                        {criterion.icon} {criterion.label}
+                      </span>
+                      <span className={styles.criterionScore}>
+                        {currentVal > 0 ? `${currentVal.toFixed(1)} ★` : "—"}
+                      </span>
+                    </div>
+
+                    <div className={styles.criterionControl}>
+                      {/* Estrelas visuais 1 a 5 */}
+                      <div className={styles.criterionStars}>
+                        {Array.from({ length: 5 }, (_, i) => {
+                          const starNum = i + 1;
+                          const isFull = currentVal >= starNum;
+                          const isHalf = currentVal === starNum - 0.5;
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              id={`modal-tech-${criterion.key}-star-${starNum}`}
+                              className={`${styles.starVisualBtnSmall} ${
+                                isFull ? styles.starFull : isHalf ? styles.starHalf : styles.starEmpty
+                              }`}
+                              onClick={() => {
+                                if (currentVal === starNum) setTechRating(criterion.key, starNum - 0.5);
+                                else if (currentVal === starNum - 0.5) setTechRating(criterion.key, 0);
+                                else setTechRating(criterion.key, starNum);
+                              }}
+                              title={`${criterion.label}: ${starNum}`}
+                            >
+                              ★
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Slider e steppers do critério */}
+                      <div className={styles.criterionSliderWrap}>
+                        <button
+                          type="button"
+                          id={`modal-tech-${criterion.key}-minus`}
+                          className={styles.stepperBtnSmall}
+                          onClick={() => setTechRating(criterion.key, currentVal - 0.5)}
+                          disabled={currentVal <= 0}
+                          title="-0.5"
+                        >
+                          -
+                        </button>
+                        <input
+                          id={`modal-tech-${criterion.key}-slider`}
+                          type="range"
+                          min="0"
+                          max="5"
+                          step="0.5"
+                          value={currentVal}
+                          onChange={(e) => setTechRating(criterion.key, parseFloat(e.target.value))}
+                          className={styles.criterionSlider}
+                        />
+                        <button
+                          type="button"
+                          id={`modal-tech-${criterion.key}-plus`}
+                          className={styles.stepperBtnSmall}
+                          onClick={() => setTechRating(criterion.key, currentVal + 0.5)}
+                          disabled={currentVal >= 5}
+                          title="+0.5"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

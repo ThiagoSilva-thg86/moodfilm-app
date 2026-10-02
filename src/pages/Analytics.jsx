@@ -93,14 +93,20 @@ export default function Analytics() {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
 
-    // 6. Distribuição de Notas (1 a 10)
+    // 6. Distribuição de Notas (1 a 10) - agrupa por aproximação inteira para manter histograma limpo
     const ratedEntries = entries.filter((e) => Number(e.rating) > 0);
     const ratingDist = Array.from({ length: 10 }, (_, i) => ({
       score: i + 1,
-      count: ratedEntries.filter((e) => Number(e.rating) === i + 1).length,
+      count: ratedEntries.filter((e) => Math.round(Number(e.rating)) === i + 1).length,
     }));
     const avgUserRating = ratedEntries.length > 0
       ? (ratedEntries.reduce((acc, e) => acc + Number(e.rating), 0) / ratedEntries.length).toFixed(1)
+      : null;
+
+    // Estatísticas da Nota Técnica (0 a 5)
+    const techEntries = entries.filter((e) => Number(e.technicalScore) > 0);
+    const avgTechRating = techEntries.length > 0
+      ? (techEntries.reduce((acc, e) => acc + Number(e.technicalScore), 0) / techEntries.length).toFixed(1)
       : null;
 
     // 7. Barômetro de Satisfação: Amados (8-10), Neutros (5-7), Baixos (1-4)
@@ -181,6 +187,7 @@ export default function Analytics() {
       topMoods: topMoods.slice(0, 8),
       ratingDist,
       avgUserRating,
+      avgTechRating,
       ratedCount: ratedEntries.length,
       loved,
       neutral,
@@ -399,10 +406,17 @@ export default function Analytics() {
             <section className={`${styles.card} ${styles.cardSpan2}`} aria-label="Distribuição de notas">
               <div className={styles.cardHeader}>
                 <span className={styles.cardBadge}>⭐ Visão 6</span>
-                <h3>Distribuição das Suas Notas (1 a 10)</h3>
-                {stats.avgUserRating && (
-                  <span className={styles.avgBadge}>Média Geral: ⭐ {stats.avgUserRating}</span>
-                )}
+                <h3>Distribuição das Suas Notas (Feeling 1 a 10)</h3>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                  {stats.avgUserRating && (
+                    <span className={styles.avgBadge}>Média Feeling: 💜 {stats.avgUserRating} / 10</span>
+                  )}
+                  {stats.avgTechRating && (
+                    <span className={styles.avgBadge} style={{ borderColor: "rgba(139, 92, 246, 0.5)", color: "#c4b5fd" }}>
+                      Média Técnica: 🎬 {stats.avgTechRating} / 5 ★
+                    </span>
+                  )}
+                </div>
               </div>
               <div className={styles.chartHistogram}>
                 {stats.ratingDist.map((col) => {

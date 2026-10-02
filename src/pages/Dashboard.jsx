@@ -105,7 +105,8 @@ export default function Dashboard() {
       const q = filters.search.toLowerCase();
       result = result.filter((e) => e.title.toLowerCase().includes(q));
     }
-    if (sortBy === "rating") result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    if (sortBy === "rating") result.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+    else if (sortBy === "techScore") result.sort((a, b) => (Number(b.technicalScore) || 0) - (Number(a.technicalScore) || 0));
     else if (sortBy === "title") result.sort((a, b) => a.title.localeCompare(b.title));
     setFiltered(result);
   }, [entries, filters, sortBy]);
@@ -256,7 +257,8 @@ export default function Dashboard() {
               onChange={(e) => setSortBy(e.target.value)}
             >
               <option value="newest">Mais recentes</option>
-              <option value="rating">Melhor avaliados</option>
+              <option value="rating">Melhor Feeling (0–10)</option>
+              <option value="techScore">Melhor Nota Técnica (0–5)</option>
               <option value="title">A–Z</option>
             </select>
           </div>
