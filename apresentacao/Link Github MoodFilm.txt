@@ -1,0 +1,11 @@
+
+Disciplina: Desenvolvimento Híbrido
+Aluno: Thiago Soares da Silva 
+Matricula: 1250120061
+
+Projeto: MoodFilm — Diário pessoal de filmes e séries com registro de humor
+Repositório GitHub: https://github.com/ThiagoSilva-thg86/moodfilm-app
+
+Usuário teste
+huguinho@mcduck.com
+Duck123
