@@ -17,6 +17,9 @@ dist
 dist-ssr
 *.local
 
+# Firebase cache
+.firebase/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -27,3 +30,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Agent workspace files
+.agents/
+skills-lock.json

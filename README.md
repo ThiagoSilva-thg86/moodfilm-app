@@ -45,13 +45,40 @@ Acesse: [http://localhost:5173](http://localhost:5173)
 
 ---
 
+## 🌐 Deploy no Firebase Hosting
+
+A aplicação está configurada para hospedagem estática no **Firebase Hosting**.
+
+### 1. Pré-requisito
+Certifique-se de ter o Firebase CLI instalado e autenticado:
+```bash
+npm install -g firebase-tools
+firebase login
+```
+
+### 2. Gerar build e publicar
+Sempre que fizer alterações e quiser atualizar a versão em produção:
+```bash
+# Gera o build de produção na pasta /dist
+npm run build
+
+# Envia apenas os arquivos de hospedagem para a nuvem
+firebase deploy --only hosting
+```
+
+A aplicação ficará disponível publicamente em:
+- 🔗 **URL de Produção**: `https://moodfilm-app.web.app` (ou `https://moodfilm-app.firebaseapp.com`)
+
+---
+
 ## 🛠️ Stack técnica
 
 | Tecnologia | Uso |
 |---|---|
-| React + Vite | Framework Web |
+| React + Vite | Framework Web SPA |
 | Firebase Auth | Cadastro e login de usuários |
-| Firestore | Persistência de dados por usuário |
+| Firestore | Persistência de dados privados em tempo real |
+| Firebase Hosting | Hospedagem em nuvem com SSL automático |
 | React Router | Roteamento de páginas |
 | CSS Modules | Estilização componentizada |
 
@@ -62,20 +89,22 @@ Acesse: [http://localhost:5173](http://localhost:5173)
 ```
 src/
 ├── firebase/
-│   └── config.js          # Configuração do Firebase
+│   └── config.js          # Configuração do Firebase SDK
 ├── contexts/
 │   └── AuthContext.jsx     # Contexto global de autenticação
 ├── services/
-│   └── entriesService.js  # CRUD no Firestore
+│   └── entriesService.js  # Operações CRUD no Firestore
 ├── components/
-│   ├── PrivateRoute.jsx    # Proteção de rotas
+│   ├── PrivateRoute.jsx    # Proteção de rotas autenticadas
 │   ├── Navbar.jsx          # Barra de navegação
 │   ├── EntryCard.jsx       # Card de cada entrada
 │   └── EntryModal.jsx      # Modal de criação/edição
 └── pages/
     ├── Login.jsx           # Tela de login
     ├── Register.jsx        # Tela de cadastro
-    └── Dashboard.jsx       # Tela principal (lista + filtros)
+    ├── Dashboard.jsx       # Tela principal (lista + filtros)
+    ├── Analytics.jsx       # Métricas e gráficos de humor
+    └── Profile.jsx         # Perfil do usuário
 ```
 
 ---
@@ -86,13 +115,14 @@ src/
 - [x] **Persistência**: Firestore, coleção `entries` por usuário
 - [x] **Dados privados**: query filtrada por `userId == auth.uid` + regras Firestore
 - [x] **CRUD completo**: Criar, Listar, Editar e Excluir entradas
-- [x] **Interface funcional**: telas de cadastro, login e dashboard
+- [x] **Interface funcional**: telas de cadastro, login, dashboard, analytics e perfil
+- [x] **Deploy em Produção**: Hospedagem ativa no Firebase Hosting
 
 ### Funcionalidades extras
 - ⭐ Avaliação com nota de 1 a 10 (estrelas)
 - 😊 Registro de humor/sentimento ao assistir (8 opções)
 - 🏷️ Filtro por tipo (Filme/Série), status e gênero
 - 🔍 Busca por título
-- 📊 Painel de estatísticas (total, assistidos, nota média)
+- 📊 Painel de estatísticas e gráficos de humor (Analytics)
 - 📝 Resenha pessoal por entrada
 - 🔄 Ordenação por mais recentes, melhor avaliados ou A–Z
