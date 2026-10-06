@@ -9,3 +9,6 @@ Repositório GitHub: https://github.com/ThiagoSilva-thg86/moodfilm-app
 Usuário teste
 huguinho@mcduck.com
 Duck123
+
+zezinho@mcduck.com
+Senha123
