@@ -9,6 +9,7 @@ import {
   updatePassword,
   EmailAuthProvider,
   reauthenticateWithCredential,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../firebase/config";
 
@@ -36,6 +37,11 @@ export function AuthProvider({ children }) {
 
   function logout() {
     return signOut(auth);
+  }
+
+  // Envia e-mail de redefinição de senha
+  function resetPassword(email) {
+    return sendPasswordResetEmail(auth, email);
   }
 
   // Atualiza apelido (displayName)
@@ -76,6 +82,7 @@ export function AuthProvider({ children }) {
     register,
     login,
     logout,
+    resetPassword,
     updateUserNickname,
     updateUserEmail,
     updateUserPassword,
