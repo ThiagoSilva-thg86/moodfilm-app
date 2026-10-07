@@ -89,29 +89,35 @@ A aplicação ficará disponível publicamente em:
 ```
 src/
 ├── firebase/
-│   └── config.js          # Configuração do Firebase SDK
+│   └── config.js              # Configuração do Firebase SDK
 ├── contexts/
-│   └── AuthContext.jsx     # Contexto global de autenticação
+│   └── AuthContext.jsx         # Contexto global de autenticação (login, cadastro, reset de senha)
+├── constants/
+│   └── technicalCriteria.js   # Critérios de avaliação técnica (direção, roteiro, etc.)
 ├── services/
-│   └── entriesService.js  # Operações CRUD no Firestore
+│   ├── entriesService.js      # Operações CRUD no Firestore
+│   └── tmdbService.js         # Integração com a API do TMDB (busca de filmes e séries)
 ├── components/
-│   ├── PrivateRoute.jsx    # Proteção de rotas autenticadas
-│   ├── Navbar.jsx          # Barra de navegação
-│   ├── EntryCard.jsx       # Card de cada entrada
-│   └── EntryModal.jsx      # Modal de criação/edição
+│   ├── PrivateRoute.jsx        # Proteção de rotas autenticadas
+│   ├── Navbar.jsx              # Barra de navegação
+│   ├── EntryCard.jsx           # Card de exibição de cada entrada
+│   ├── EntryModal.jsx          # Modal de criação/edição de filmes e séries
+│   ├── MovieInfo.jsx           # Detalhes de filmes importados do TMDB
+│   ├── SeriesInfo.jsx          # Detalhes e temporadas de séries
+│   └── SeriesSearch.jsx        # Campo de busca e sugestões com TMDB
 └── pages/
-    ├── Login.jsx           # Tela de login
-    ├── Register.jsx        # Tela de cadastro
-    ├── Dashboard.jsx       # Tela principal (lista + filtros)
-    ├── Analytics.jsx       # Métricas e gráficos de humor
-    └── Profile.jsx         # Perfil do usuário
+    ├── Login.jsx               # Tela de login e recuperação de senha segura
+    ├── Register.jsx            # Tela de cadastro de novos usuários
+    ├── Dashboard.jsx           # Tela principal (lista, filtros e ordenação)
+    ├── Analytics.jsx           # Métricas e gráficos de humor
+    └── Profile.jsx             # Perfil do usuário (edição de apelido, e-mail e senha)
 ```
 
 ---
 
 ## ✅ Requisitos atendidos
 
-- [x] **Autenticação**: Firebase Auth (e-mail/senha), cadastro e login
+- [x] **Autenticação**: Firebase Auth (e-mail/senha), cadastro, login e recuperação de senha
 - [x] **Persistência**: Firestore, coleção `entries` por usuário
 - [x] **Dados privados**: query filtrada por `userId == auth.uid` + regras Firestore
 - [x] **CRUD completo**: Criar, Listar, Editar e Excluir entradas
@@ -119,7 +125,9 @@ src/
 - [x] **Deploy em Produção**: Hospedagem ativa no Firebase Hosting
 
 ### Funcionalidades extras
-- ⭐ Avaliação com nota de 1 a 10 (estrelas)
+- 🔑 Recuperação de senha segura (prevenção contra enumeração de e-mails / OWASP)
+- 🎬 Integração com TMDB API (busca e preenchimento automático de dados de filmes e séries)
+- ⭐ Avaliação com nota de 1 a 10 (estrelas) e critérios técnicos detalhados
 - 😊 Registro de humor/sentimento ao assistir (8 opções)
 - 🏷️ Filtro por tipo (Filme/Série), status e gênero
 - 🔍 Busca por título
