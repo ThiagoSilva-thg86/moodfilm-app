@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { isNicknameAvailable } from "../services/nicknameService";
 import styles from "./Auth.module.css";
 
 export default function Register() {
@@ -13,8 +14,71 @@ export default function Register() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [nicknameStatus, setNicknameStatus] = useState({
+    checking: false,
+    available: null,
+    message: "",
+  });
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  // Validação assíncrona do apelido com debounce no banco de dados Firestore
+  useEffect(() => {
+    const trimmed = nickname.trim();
+    if (!trimmed) {
+      setNicknameStatus({ checking: false, available: null, message: "" });
+      return;
+    }
+
+    if (trimmed.length < 3) {
+      setNicknameStatus({
+        checking: false,
+        available: false,
+        message: "O apelido deve ter pelo menos 3 caracteres.",
+      });
+      return;
+    }
+
+    let active = true;
+    setNicknameStatus({
+      checking: true,
+      available: null,
+      message: "Consultando disponibilidade no banco...",
+    });
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await isNicknameAvailable(trimmed);
+        if (!active) return;
+
+        if (res.available) {
+          setNicknameStatus({
+            checking: false,
+            available: true,
+            message: "✓ Apelido disponível!",
+          });
+        } else {
+          setNicknameStatus({
+            checking: false,
+            available: false,
+            message: res.error || "Este apelido já está em uso.",
+          });
+        }
+      } catch (err) {
+        if (!active) return;
+        setNicknameStatus({
+          checking: false,
+          available: false,
+          message: "Erro ao consultar apelido.",
+        });
+      }
+    }, 400);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [nickname]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,16 +88,24 @@ export default function Register() {
     if (password.length < 6) {
       return setError("A senha deve ter ao menos 6 caracteres.");
     }
+    if (!nickname.trim()) {
+      return setError("Por favor, defina um apelido exclusivo.");
+    }
+    if (nicknameStatus.available === false) {
+      return setError(nicknameStatus.message || "Apelido inválido ou indisponível.");
+    }
+
     try {
       setError("");
       setLoading(true);
-      // Usa o apelido como displayName; se vazio, usa o primeiro nome
-      const displayName = nickname.trim() || name.trim().split(" ")[0];
-      await register(email, password, displayName);
+      const chosenNickname = nickname.trim();
+      await register(email, password, chosenNickname, chosenNickname);
       navigate("/");
     } catch (err) {
       setError(
-        err.code === "auth/email-already-in-use"
+        err.message?.includes("apelido")
+          ? err.message
+          : err.code === "auth/email-already-in-use"
           ? "Este e-mail já está em uso."
           : "Erro ao criar conta. Tente novamente."
       );
@@ -70,17 +142,47 @@ export default function Register() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="reg-nickname">
-              Apelido <span className={styles.fieldHint}>(aparece na tela principal)</span>
-            </label>
+            <div className={styles.fieldLabelRow}>
+              <label htmlFor="reg-nickname">
+                Apelido <span className={styles.fieldHint}>(único no sistema)</span>
+              </label>
+              {nicknameStatus.checking && (
+                <span className={styles.nicknameChecking}>Verificando...</span>
+              )}
+              {!nicknameStatus.checking && nicknameStatus.available === true && (
+                <span className={styles.nicknameAvailable}>✓ Disponível</span>
+              )}
+              {!nicknameStatus.checking && nicknameStatus.available === false && (
+                <span className={styles.nicknameUnavailable}>✗ Indisponível</span>
+              )}
+            </div>
             <input
               id="reg-nickname"
               type="text"
               placeholder="Ex: Thiago, Thi, ThiCinema..."
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              autoComplete="off"
+              required
+              autoComplete="nickname"
+              className={
+                nicknameStatus.available === true
+                  ? styles.inputSuccess
+                  : nicknameStatus.available === false
+                  ? styles.inputError
+                  : ""
+              }
             />
+            {nicknameStatus.message && (
+              <p
+                className={
+                  nicknameStatus.available === true
+                    ? styles.fieldFeedbackSuccess
+                    : styles.fieldFeedbackError
+                }
+              >
+                {nicknameStatus.message}
+              </p>
+            )}
           </div>
 
           <div className={styles.field}>

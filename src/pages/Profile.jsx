@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { isNicknameAvailable, validateNicknameFormat } from "../services/nicknameService";
 import Navbar from "../components/Navbar";
 import styles from "./Profile.module.css";
 
@@ -56,22 +57,77 @@ export default function Profile() {
 
   // Mensagens de status individuais por seção
   const [nameStatus, setNameStatus] = useState({ error: "", success: "", loading: false });
+  const [nickAvailability, setNickAvailability] = useState({ checking: false, available: null, message: "" });
   const [emailStatus, setEmailStatus] = useState({ error: "", success: "", loading: false });
   const [passStatus, setPassStatus] = useState({ error: "", success: "", loading: false });
+
+  // Validação assíncrona O(1) de apelido no Firestore ao digitar
+  useEffect(() => {
+    const trimmed = nickname.trim();
+    if (!trimmed) {
+      setNickAvailability({ checking: false, available: null, message: "" });
+      return;
+    }
+
+    if (trimmed === currentUser?.displayName) {
+      setNickAvailability({ checking: false, available: true, message: "Este é seu apelido atual." });
+      return;
+    }
+
+    const fmt = validateNicknameFormat(trimmed);
+    if (!fmt.valid) {
+      setNickAvailability({ checking: false, available: false, message: fmt.error });
+      return;
+    }
+
+    let active = true;
+    setNickAvailability({ checking: true, available: null, message: "Consultando banco de dados..." });
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await isNicknameAvailable(trimmed, currentUser?.uid);
+        if (!active) return;
+        if (res.available) {
+          setNickAvailability({ checking: false, available: true, message: "✓ Apelido disponível!" });
+        } else {
+          setNickAvailability({ checking: false, available: false, message: res.error || "Apelido indisponível." });
+        }
+      } catch (err) {
+        if (!active) return;
+        setNickAvailability({ checking: false, available: false, message: "Erro ao checar apelido." });
+      }
+    }, 350);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [nickname, currentUser?.displayName, currentUser?.uid]);
 
   // 1. Atualizar Apelido
   async function handleUpdateNickname(e) {
     e.preventDefault();
-    if (!nickname.trim()) {
+    const trimmed = nickname.trim();
+    if (!trimmed) {
       return setNameStatus({ error: "O apelido não pode ficar em branco.", success: "", loading: false });
+    }
+    if (trimmed === currentUser?.displayName) {
+      return setNameStatus({ error: "Você já está usando este apelido.", success: "", loading: false });
+    }
+    if (nickAvailability.available === false) {
+      return setNameStatus({ error: nickAvailability.message || "Apelido inválido ou em uso.", success: "", loading: false });
     }
     try {
       setNameStatus({ error: "", success: "", loading: true });
-      await updateUserNickname(nickname.trim());
-      setNameStatus({ error: "", success: "Apelido atualizado com sucesso!", loading: false });
+      await updateUserNickname(trimmed);
+      setNameStatus({ error: "", success: "Apelido atualizado com sucesso no banco de dados!", loading: false });
     } catch (err) {
       console.error(err);
-      setNameStatus({ error: "Erro ao atualizar apelido. Tente novamente.", success: "", loading: false });
+      setNameStatus({
+        error: err.message?.includes("apelido") ? err.message : "Erro ao atualizar apelido. Tente novamente.",
+        success: "",
+        loading: false,
+      });
     }
   }
 
@@ -188,7 +244,18 @@ export default function Profile() {
 
             <form onSubmit={handleUpdateNickname} className={styles.form}>
               <div className={styles.field}>
-                <label htmlFor="profile-nickname">Seu Apelido</label>
+                <div className={styles.fieldLabelRow}>
+                  <label htmlFor="profile-nickname">Seu Apelido</label>
+                  {nickAvailability.checking && (
+                    <span className={styles.statusChecking}>Consultando...</span>
+                  )}
+                  {!nickAvailability.checking && nickAvailability.available === true && nickname.trim() !== currentUser?.displayName && (
+                    <span className={styles.statusAvailable}>✓ Disponível</span>
+                  )}
+                  {!nickAvailability.checking && nickAvailability.available === false && (
+                    <span className={styles.statusUnavailable}>✗ Indisponível</span>
+                  )}
+                </div>
                 <input
                   id="profile-nickname"
                   type="text"
@@ -196,15 +263,39 @@ export default function Profile() {
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                   required
+                  autoComplete="nickname"
+                  className={
+                    nickAvailability.available === true && nickname.trim() !== currentUser?.displayName
+                      ? styles.inputSuccess
+                      : nickAvailability.available === false
+                      ? styles.inputError
+                      : ""
+                  }
                 />
+                {nickAvailability.message && (
+                  <p
+                    className={
+                      nickAvailability.available === true
+                        ? styles.feedbackSuccess
+                        : styles.feedbackError
+                    }
+                  >
+                    {nickAvailability.message}
+                  </p>
+                )}
               </div>
 
               <button
                 type="submit"
                 className={styles.saveBtn}
-                disabled={nameStatus.loading}
+                disabled={
+                  nameStatus.loading ||
+                  nickAvailability.checking ||
+                  nickAvailability.available === false ||
+                  nickname.trim() === currentUser?.displayName
+                }
               >
-                {nameStatus.loading ? "Salvando..." : "Salvar Apelido"}
+                {nameStatus.loading ? "Salvando no Banco..." : "Salvar Apelido"}
               </button>
             </form>
           </section>

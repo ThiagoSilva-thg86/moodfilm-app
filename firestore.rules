@@ -14,5 +14,21 @@ service cloud.firestore {
       allow create: if request.auth != null
                     && request.resource.data.userId == request.auth.uid;
     }
+
+    // Regra para a coleção "usernames" (Garante apelidos únicos com consulta O(1))
+    match /usernames/{username} {
+      // Qualquer usuário pode consultar se um apelido já está ocupado
+      allow read: if true;
+      // Permite reivindicar o apelido se o UID bater com o usuário autenticado
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      // Permite atualizar ou liberar (deletar) apenas se o documento pertencer ao próprio usuário
+      allow update, delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+
+    // Regra para o perfil do usuário
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }
