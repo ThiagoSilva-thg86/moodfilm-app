@@ -864,3 +864,58 @@
   padding: 0.5rem 0.65rem;
   border-radius: 8px;
 }
+
+/* ============================================================
+   Responsividade Mobile – Analytics
+   ============================================================ */
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem 0.75rem 3.5rem;
+    gap: 1.25rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .title {
+    font-size: 1.45rem;
+  }
+
+  .subtitle {
+    font-size: 0.82rem;
+  }
+
+  .refreshBtn {
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem;
+  }
+
+  .card {
+    padding: 1rem 0.85rem;
+    border-radius: 14px;
+  }
+
+  .heroBigNum {
+    font-size: 2.2rem;
+  }
+
+  .heroMetricRow {
+    gap: 0.85rem;
+  }
+
+  .hallOfFameGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .hallOfFameGrid {
+    grid-template-columns: 1fr;
+  }
+}
+

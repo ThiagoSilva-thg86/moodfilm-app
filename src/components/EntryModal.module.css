@@ -879,3 +879,89 @@
   line-height: 1.35;
 }
 
+/* ============================================================
+   Responsividade Mobile – EntryModal
+   ============================================================ */
+@media (max-width: 600px) {
+  .overlay {
+    padding: 0.5rem;
+  }
+
+  .modal {
+    padding: 1.25rem 0.9rem;
+    max-height: 94vh;
+    border-radius: 18px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .moodGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+  }
+
+  .moodBtn {
+    padding: 0.45rem 0.2rem;
+  }
+
+  .moodEmoji {
+    font-size: 1.15rem;
+  }
+
+  .moodText {
+    font-size: 0.62rem;
+  }
+
+  .starVisualBtn {
+    font-size: 1.15rem;
+  }
+
+  .feelingStarsRow {
+    gap: 1px;
+    justify-content: space-between;
+  }
+
+  .stepperBtn {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .technicalBox {
+    padding: 0.8rem 0.65rem;
+  }
+
+  .criterionControl {
+    gap: 0.5rem;
+  }
+
+  .criterionSliderWrap {
+    min-width: 110px;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    width: 100%;
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .moodGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .starVisualBtn {
+    font-size: 1rem;
+  }
+}
+
+

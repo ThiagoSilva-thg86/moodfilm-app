@@ -527,3 +527,49 @@
   background: rgba(239, 68, 68, 0.18);
   transform: translateY(-1px);
 }
+
+/* ============================================================
+   Responsividade Mobile – EntryCard
+   ============================================================ */
+@media (max-width: 600px) {
+  .card {
+    padding: 1rem;
+    border-radius: 16px;
+    gap: 0.5rem;
+  }
+
+  .coverContainer {
+    width: calc(100% + 2rem);
+    margin: -1rem -1rem 0.25rem -1rem;
+    height: 195px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .title {
+    font-size: 1.05rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.55rem;
+  }
+
+  .primaryMoodBadge {
+    padding: 0.35rem 0.65rem;
+  }
+
+  .primaryMoodEmoji {
+    font-size: 1.15rem;
+  }
+
+  .primaryMoodLabel {
+    font-size: 0.8rem;
+  }
+
+  .editBtn,
+  .deleteBtn {
+    padding: 0.55rem 0.5rem;
+    font-size: 0.82rem;
+  }
+}
+

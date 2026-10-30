@@ -210,7 +210,7 @@
 /* Grid */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1.25rem;
 }
 
@@ -252,3 +252,95 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   Responsividade Mobile – Dashboard
+   ============================================================ */
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem 0.85rem 3.5rem;
+  }
+
+  .statsBar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .stat {
+    min-width: 0;
+    padding: 0.75rem 0.6rem;
+    border-radius: 12px;
+  }
+
+  /* O último stat (Média) ocupa as duas colunas para fechamento harmonioso */
+  .stat:last-child {
+    grid-column: span 2;
+  }
+
+  .statNumber {
+    font-size: 1.35rem;
+  }
+
+  .statLabel {
+    font-size: 0.7rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: visible;
+    gap: 0.65rem;
+  }
+
+  .searchInput {
+    width: 100%;
+    min-width: 0;
+    font-size: 0.9rem;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .selectMoodFilm {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filterGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .select {
+    width: 100%;
+    min-width: 0;
+    padding: 0.65rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  /* O botão + Adicionar ganha destaque de largura total no mobile */
+  .addBtn {
+    grid-column: span 2;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .emptyState {
+    padding: 3rem 1rem;
+  }
+}
+
