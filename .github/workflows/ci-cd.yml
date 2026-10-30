@@ -1,0 +1,92 @@
+name: CI/CD Pipeline - MoodFilm
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Lint e Análise Estática de Código
+  # -------------------------------------------------------------
+  lint:
+    name: 🔍 Linter & Análise Estática
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Executar Linter (Oxlint)
+        run: npm run lint
+
+  # -------------------------------------------------------------
+  # Job 2: Testes Automatizados (Regressão & Funcionalidades)
+  # -------------------------------------------------------------
+  test:
+    name: 🧪 Testes Automatizados (Vitest)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Executar Suíte de Testes Automatizados
+        run: npm test -- --run
+
+  # -------------------------------------------------------------
+  # Job 3: Build de Produção
+  # -------------------------------------------------------------
+  build:
+    name: 🏗️ Build de Produção (Vite)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Gerar Bundle de Produção
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY || 'dummy_api_key_for_ci' }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN || 'moodfilm-ci.firebaseapp.com' }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID || 'moodfilm-ci' }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET || 'moodfilm-ci.appspot.com' }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789' }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID || '1:123456789:web:abcdef' }}
+          VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY || 'dummy_tmdb_key_for_ci' }}
+        run: npm run build
+
+      - name: Armazenar Artefato de Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: moodfilm-dist
+          path: dist/
+          retention-days: 7

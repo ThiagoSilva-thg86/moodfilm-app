@@ -36,12 +36,40 @@ No console Firebase → Firestore → **Regras**, cole o conteúdo de `firestore
 O app usa uma query com `where("userId", ...)` + `orderBy("createdAt")`.  
 Ao rodar pela primeira vez, o Firebase vai mostrar um link no console do navegador para criar o índice automaticamente. Clique nele!
 
-### 5. Rode localmente
+### 5. Testes automatizados & Qualidade
+```bash
+# Executa todos os testes automatizados da esteira
+npm test
+
+# Modo interativo (watch) durante o desenvolvimento
+npm run test:watch
+
+# Análise estática de código (Linter)
+npm run lint
+```
+
+### 6. Rode localmente
 ```bash
 npm run dev
 ```
 
 Acesse: [http://localhost:5173](http://localhost:5173)
+
+---
+
+## ⚙️ Esteira de CI/CD (GitHub Actions)
+
+O projeto conta com um pipeline automatizado de integração e entrega contínua configurado em [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) para garantir que nenhuma alteração ou nova funcionalidade quebre recursos existentes.
+
+A esteira é disparada automaticamente a cada `push` ou `pull_request` nas branches `main` e `master`:
+
+1. **Estágio 1 - Linter & Análise Estática**: Executa `oxlint` para verificar integridade e boas práticas.
+2. **Estágio 2 - Testes Automatizados**: Executa a suíte de 25+ testes automatizados (unitários e de integração com Vitest e Testing Library), cobrindo:
+   - Regra de negócio de unicidade e formato de apelidos no Firestore ($O(1)$)
+   - Operações do diário de filmes e séries (CRUD)
+   - Validações do formulário de cadastro e autenticação
+   - Renderização e responsividade de componentes essenciais
+3. **Estágio 3 - Build de Produção**: Compila o bundle Vite garantindo ausência de erros de importação, CSS e empacotamento, disponibilizando o artefato pronto para deploy.
 
 ---
 
