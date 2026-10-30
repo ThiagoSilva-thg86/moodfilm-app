@@ -206,37 +206,39 @@
 }
 
 /* ============================================================
-   Responsividade Mobile – Navbar
+   Responsividade Mobile – Navbar Superior
    ============================================================ */
 @media (max-width: 768px) {
   .navbar {
     padding: 0 0.85rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background: rgba(8, 8, 24, 0.95);
   }
 
   .inner {
-    height: 58px;
+    height: 56px;
+    width: 100%;
     gap: 0.5rem;
   }
 
   .brandGroup {
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .brandName {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
+    display: block;
   }
 
+  /* Os links principais agora ficam na barra inferior (BottomNav) */
   .navLinks {
-    gap: 0.25rem;
-  }
-
-  .navLink {
-    font-size: 0.78rem;
-    padding: 0.3rem 0.5rem;
+    display: none;
   }
 
   .userName {
-    max-width: 80px;
+    max-width: 90px;
     font-size: 0.8rem;
   }
 
@@ -246,43 +248,17 @@
   }
 
   .tooltipBox {
-    display: none; /* Em telas touch, remove tooltips hover para evitar travamentos visuais */
+    display: none;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 380px) {
   .navbar {
     padding: 0 0.5rem;
   }
 
-  .brandGroup {
-    gap: 0.4rem;
-  }
-
-  .brandIcon {
-    font-size: 1.2rem;
-  }
-
-  .brandName {
-    display: none; /* Em smartphones pequenos, deixa apenas o ícone 🎬 para dar espaço */
-  }
-
-  .navLink {
-    font-size: 0.75rem;
-    padding: 0.28rem 0.45rem;
-  }
-
-  .userArea {
-    gap: 0.4rem;
-  }
-
-  .userProfileLink {
-    padding: 0.25rem 0.45rem;
-    gap: 0.4rem;
-  }
-
   .userName {
-    display: none; /* No mobile estreito, mostra apenas o Avatar com iniciais + engrenagem */
+    display: none; /* Em telas ultra estreitas, esconde o texto e mantém Avatar + engrenagem */
   }
 
   .avatar {
@@ -292,8 +268,9 @@
   }
 
   .logoutBtn {
-    padding: 0.3rem 0.55rem;
+    padding: 0.3rem 0.5rem;
     font-size: 0.72rem;
   }
 }
+
 

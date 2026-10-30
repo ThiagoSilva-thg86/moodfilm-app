@@ -357,7 +357,7 @@
    ============================================================ */
 @media (max-width: 640px) {
   .container {
-    padding: 1rem 0.85rem 3rem;
+    padding: 1rem 0.85rem calc(5.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   .profileHero {

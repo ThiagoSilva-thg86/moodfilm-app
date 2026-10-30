@@ -9,6 +9,7 @@ import {
 import EntryModal from "../components/EntryModal";
 import EntryCard from "../components/EntryCard";
 import Navbar from "../components/Navbar";
+import BottomNav from "../components/BottomNav";
 import styles from "./Dashboard.module.css";
 
 const GENRES = ["Ação", "Comédia", "Drama", "Terror", "Romance", "Sci-Fi", "Animação", "Documentário", "Suspense", "Fantasia"];
@@ -336,6 +337,8 @@ export default function Dashboard() {
           onClose={() => { setModalOpen(false); setEditingEntry(null); }}
         />
       )}
+
+      <BottomNav />
     </div>
   );
 }
