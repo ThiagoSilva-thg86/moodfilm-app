@@ -21,8 +21,10 @@ service cloud.firestore {
       allow read: if true;
       // Permite reivindicar o apelido se o UID bater com o usuário autenticado
       allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
-      // Permite atualizar ou liberar (deletar) apenas se o documento pertencer ao próprio usuário
-      allow update, delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      // Permite atualizar apenas se o documento pertencer ao próprio usuário
+      allow update: if request.auth != null && resource.data.uid == request.auth.uid;
+      // Permite deletar se pertencer ao próprio usuário ou se o documento não existir
+      allow delete: if request.auth != null && (resource == null || resource.data.uid == request.auth.uid);
     }
 
     // Regra para o perfil do usuário

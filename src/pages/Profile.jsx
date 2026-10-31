@@ -122,9 +122,12 @@ export default function Profile() {
       await updateUserNickname(trimmed);
       setNameStatus({ error: "", success: "Apelido atualizado com sucesso no banco de dados!", loading: false });
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao atualizar apelido:", err);
+      const msg = err.message || "";
       setNameStatus({
-        error: err.message?.includes("apelido") ? err.message : "Erro ao atualizar apelido. Tente novamente.",
+        error: msg.includes("permission-denied")
+          ? "Erro de permissão no banco de dados. Tente novamente."
+          : msg || "Erro ao atualizar apelido. Tente novamente.",
         success: "",
         loading: false,
       });

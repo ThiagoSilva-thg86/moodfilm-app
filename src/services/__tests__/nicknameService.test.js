@@ -32,6 +32,10 @@ describe("nicknameService", () => {
       expect(normalizeNickname("Cinefilo_86")).toBe("cinefilo_86");
       expect(normalizeNickname("MARLON-BRANDO")).toBe("marlon-brando");
       expect(normalizeNickname("Thiagão")).toBe("thiagao");
+      expect(normalizeNickname("Julião")).toBe("juliao");
+      expect(normalizeNickname("Beltrão")).toBe("beltrao");
+      expect(normalizeNickname("Jacó")).toBe("jaco");
+      expect(normalizeNickname("D'Ávila")).toBe("davila");
       expect(normalizeNickname("João & Maria")).toBe("joao_&_maria");
     });
 
@@ -48,6 +52,11 @@ describe("nicknameService", () => {
       expect(validateNicknameFormat("Tt MF").valid).toBe(true);
       expect(validateNicknameFormat("cine_filo").valid).toBe(true);
       expect(validateNicknameFormat("joao-10").valid).toBe(true);
+      expect(validateNicknameFormat("Julião").valid).toBe(true);
+      expect(validateNicknameFormat("Beltrão").valid).toBe(true);
+      expect(validateNicknameFormat("Jacó").valid).toBe(true);
+      expect(validateNicknameFormat("D'Ávila").valid).toBe(true);
+      expect(validateNicknameFormat("Conceição").valid).toBe(true);
     });
 
     it("deve rejeitar apelidos com menos de 3 caracteres", () => {
@@ -128,9 +137,15 @@ describe("nicknameService", () => {
       expect(mockBatch.commit).toHaveBeenCalledTimes(1);
     });
 
-    it("deve deletar a chave antiga em batch caso o usuário esteja alterando o apelido", async () => {
+    it("deve deletar a chave antiga em batch caso o usuário esteja alterando o apelido e a chave anterior exista", async () => {
+      // 1. Checagem de disponibilidade do novo apelido
       getDoc.mockResolvedValueOnce({
         exists: () => false,
+      });
+      // 2. Checagem da existência do apelido antigo
+      getDoc.mockResolvedValueOnce({
+        exists: () => true,
+        data: () => ({ uid: "user_123" }),
       });
 
       const mockBatch = {
@@ -143,6 +158,30 @@ describe("nicknameService", () => {
       await claimNickname("user_123", "NovoApelido", "ApelidoAntigo");
 
       expect(mockBatch.delete).toHaveBeenCalledTimes(1);
+      expect(mockBatch.set).toHaveBeenCalledTimes(2);
+      expect(mockBatch.commit).toHaveBeenCalledTimes(1);
+    });
+
+    it("não deve tentar deletar a chave antiga caso ela não exista no banco (usuário legado)", async () => {
+      // 1. Checagem de disponibilidade do novo apelido
+      getDoc.mockResolvedValueOnce({
+        exists: () => false,
+      });
+      // 2. Chave antiga não existe no Firestore
+      getDoc.mockResolvedValueOnce({
+        exists: () => false,
+      });
+
+      const mockBatch = {
+        set: vi.fn(),
+        delete: vi.fn(),
+        commit: vi.fn().mockResolvedValue(true),
+      };
+      writeBatch.mockReturnValueOnce(mockBatch);
+
+      await claimNickname("user_123", "Thiagg", "Th");
+
+      expect(mockBatch.delete).not.toHaveBeenCalled();
       expect(mockBatch.set).toHaveBeenCalledTimes(2);
       expect(mockBatch.commit).toHaveBeenCalledTimes(1);
     });

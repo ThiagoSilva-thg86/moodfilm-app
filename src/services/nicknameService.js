@@ -18,14 +18,16 @@ export function normalizeNickname(nickname) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[']/g, "")
     .replace(/\s+/g, "_");
 }
 
 /**
  * Valida as regras de negócio de formato do apelido:
  * - Deve ter entre 3 e 20 caracteres
- * - Apenas letras (com ou sem acento), números, sublinhado (_), hífen (-) e espaços simples entre palavras
- * - Símbolos especiais não são permitidos
+ * - Permite todas as letras (com ou sem acentos da língua portuguesa como Julião, Beltrão, Jacó),
+ *   números, sublinhado (_), hífen (-), apóstrofo (') e espaços simples entre palavras.
+ * - Símbolos estranhos não são permitidos.
  */
 export function validateNicknameFormat(nickname) {
   if (!nickname || typeof nickname !== "string") {
@@ -35,7 +37,8 @@ export function validateNicknameFormat(nickname) {
     };
   }
 
-  const trimmed = nickname.trim();
+  // Normaliza para NFC para que caracteres acentuados gerados em qualquer teclado/SO sejam unificados
+  const trimmed = nickname.trim().normalize("NFC");
 
   if (trimmed.length < 3) {
     return {
@@ -51,12 +54,13 @@ export function validateNicknameFormat(nickname) {
     };
   }
 
-  // Permite letras, números, underscore, hífen e espaços simples entre palavras
-  const validRegex = /^[a-zA-Z0-9_\u00C0-\u00FF]+([ _-][a-zA-Z0-9_\u00C0-\u00FF]+)*$/;
+  // Permite todas as categorias de letras Unicode (\p{L}) cobrindo toda a acentuação portuguesa,
+  // dígitos (\p{N}), sublinhado (_), e separadores válidos entre palavras (espaço, hífen, apóstrofo)
+  const validRegex = /^[\p{L}0-9_]+([ _'-][\p{L}0-9_]+)*$/u;
   if (!validRegex.test(trimmed)) {
     return {
       valid: false,
-      error: "Use apenas letras, números, espaços, '_' ou '-'. Símbolos especiais não são permitidos.",
+      error: "Use apenas letras (incluindo acentos como em Julião, Beltrão, Jacó), números, espaços, '_', '-' ou apóstrofo.",
     };
   }
 
@@ -123,8 +127,31 @@ export async function claimNickname(userId, newNickname, oldNickname = null) {
   const newNormalized = normalizeNickname(newNickname);
   const oldNormalized = oldNickname ? normalizeNickname(oldNickname) : null;
 
-  // Se for o mesmo apelido normalizado, nada precisa ser trocado na chave
+  // Se for o mesmo apelido normalizado, apenas atualiza a grafia de exibição (ex: maiúsculas/acentos)
   if (oldNormalized && oldNormalized === newNormalized) {
+    const batch = writeBatch(db);
+    const usernameRef = doc(db, "usernames", newNormalized);
+    batch.set(
+      usernameRef,
+      {
+        uid: userId,
+        nickname: newNickname.trim(),
+        normalized: newNormalized,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+    const userRef = doc(db, "users", userId);
+    batch.set(
+      userRef,
+      {
+        nickname: newNickname.trim(),
+        normalizedNickname: newNormalized,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+    await batch.commit();
     return;
   }
 
@@ -145,10 +172,18 @@ export async function claimNickname(userId, newNickname, oldNickname = null) {
     createdAt: serverTimestamp(),
   });
 
-  // 2. Se existia apelido anterior diferente, libera a chave antiga
+  // 2. Se existia apelido anterior diferente, checa se o documento realmente existe no Firestore
+  // antes de deletar, evitando erro de permissão por tentar deletar documento inexistente de contas legadas
   if (oldNormalized) {
-    const oldUsernameRef = doc(db, "usernames", oldNormalized);
-    batch.delete(oldUsernameRef);
+    try {
+      const oldUsernameRef = doc(db, "usernames", oldNormalized);
+      const oldSnap = await getDoc(oldUsernameRef);
+      if (oldSnap.exists() && oldSnap.data()?.uid === userId) {
+        batch.delete(oldUsernameRef);
+      }
+    } catch (e) {
+      console.warn("Não foi possível verificar ou deletar chave de apelido anterior:", e);
+    }
   }
 
   // 3. Atualiza o perfil central do usuário
