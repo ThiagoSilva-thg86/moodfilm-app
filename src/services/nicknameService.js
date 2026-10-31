@@ -8,19 +8,19 @@ import { db } from "../firebase/config";
 
 /**
  * Normaliza o apelido para armazenamento e busca O(1) no Firestore.
- * Remove espaços nas pontas e converte para minúsculas para garantir
- * que "Thiago", "thiago" e "THIAGO" sejam tratados como o mesmo apelido.
+ * Remove espaços nas pontas, converte para minúsculas e unifica espaços em '_'
+ * para garantir que "Tt MF", "tt mf", "tt_mf" e "TT_MF" sejam tratados como o mesmo apelido único.
  */
 export function normalizeNickname(nickname) {
   if (!nickname || typeof nickname !== "string") return "";
-  return nickname.trim().toLowerCase();
+  return nickname.trim().toLowerCase().replace(/\s+/g, "_");
 }
 
 /**
  * Valida as regras de negócio de formato do apelido:
  * - Deve ter entre 3 e 20 caracteres
- * - Apenas letras (com ou sem acento), números, sublinhado (_) e hífen (-)
- * - Não pode conter espaços ou caracteres especiais proibidos
+ * - Apenas letras (com ou sem acento), números, sublinhado (_), hífen (-) e espaços simples entre palavras
+ * - Símbolos especiais não são permitidos
  */
 export function validateNicknameFormat(nickname) {
   if (!nickname || typeof nickname !== "string") {
@@ -46,12 +46,12 @@ export function validateNicknameFormat(nickname) {
     };
   }
 
-  // Permite letras, números, underscore e hífen
-  const validRegex = /^[a-zA-Z0-9_\u00C0-\u00FF-]+$/;
+  // Permite letras, números, underscore, hífen e espaços simples entre palavras
+  const validRegex = /^[a-zA-Z0-9_\u00C0-\u00FF]+([ _-][a-zA-Z0-9_\u00C0-\u00FF]+)*$/;
   if (!validRegex.test(trimmed)) {
     return {
       valid: false,
-      error: "Use apenas letras, números, '_' ou '-'. Sem espaços ou símbolos.",
+      error: "Use apenas letras, números, espaços, '_' ou '-'. Símbolos especiais não são permitidos.",
     };
   }
 

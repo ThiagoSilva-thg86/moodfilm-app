@@ -3,14 +3,23 @@
    ============================================================ */
 .dashboard {
   min-height: 100vh;
+  min-height: 100dvh;
   background: radial-gradient(ellipse at 10% 10%, #1a0533 0%, #080818 50%, #001020 100%);
   color: #f1f5f9;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .main {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1.5rem 1.5rem 4rem;
+  padding: 1.5rem 1.5rem 5rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Stats bar */
@@ -19,6 +28,8 @@
   gap: 1rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .stat {
@@ -30,6 +41,7 @@
   padding: 1rem 1.25rem;
   text-align: center;
   transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
 .stat:hover {
@@ -54,6 +66,87 @@
   font-weight: 500;
 }
 
+/* Barra de Ação de Destaque no Topo */
+.topActionBar {
+  margin-bottom: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.primaryAddBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
+  transition: all 0.25s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.primaryAddBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 26px rgba(124, 58, 237, 0.5);
+  filter: brightness(1.08);
+}
+
+.primaryAddBtn:active {
+  transform: translateY(0);
+}
+
+.primaryAddIcon {
+  font-size: 1.15rem;
+}
+
+/* Floating Action Button (FAB) */
+.fabBtn {
+  position: fixed;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  right: 1.25rem;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.2rem;
+  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  backdrop-filter: blur(8px);
+}
+
+.fabBtn:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.65);
+}
+
+.fabBtn:active {
+  transform: scale(0.96);
+}
+
+.fabIcon {
+  font-size: 1rem;
+}
+
+.fabLabel {
+  white-space: nowrap;
+}
+
 /* Controls */
 .controls {
   display: flex;
@@ -64,6 +157,7 @@
   margin-bottom: 1.5rem;
   overflow-x: auto;
   padding-bottom: 0.25rem;
+  box-sizing: border-box;
 }
 
 .controls::-webkit-scrollbar {
@@ -89,6 +183,7 @@
   outline: none;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .searchInput:focus {
@@ -118,6 +213,7 @@
   font-family: inherit;
   transition: border-color 0.2s;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .select:focus { border-color: rgba(139, 92, 246, 0.6); }
@@ -141,6 +237,7 @@
   font-weight: 700;
   box-shadow: 0 2px 10px rgba(139, 92, 246, 0.2);
   min-width: 170px;
+  box-sizing: border-box;
 }
 
 .selectMoodFilm:focus {
@@ -159,71 +256,51 @@
   border: none;
   border-radius: 10px;
   color: #fff;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  flex-shrink: 0;
-  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
   font-family: inherit;
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+  transition: opacity 0.2s, transform 0.15s;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .addBtn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
-}
-
-.actionGroup {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.analyticsBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.65rem 1.15rem;
-  background: rgba(167, 139, 250, 0.12);
-  border: 1px solid rgba(167, 139, 250, 0.35);
-  border-radius: 10px;
-  color: #c4b5fd;
-  font-weight: 700;
-  font-size: 0.88rem;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-
-.analyticsBtn:hover {
-  background: rgba(167, 139, 250, 0.24);
-  border-color: rgba(167, 139, 250, 0.6);
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.25);
-}
-
-/* Grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: 1.25rem;
 }
 
 /* Empty state */
 .emptyState {
   text-align: center;
-  padding: 5rem 2rem;
-  color: rgba(255,255,255,0.5);
+  padding: 4rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin-top: 1rem;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.emptyIcon { font-size: 4rem; display: block; margin-bottom: 1rem; }
-.emptyTitle { font-size: 1.25rem; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; }
-.emptyHint  { font-size: 0.9rem; margin-bottom: 1.5rem; }
+.emptyIcon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.emptyTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 0.4rem;
+}
+
+.emptyHint {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 1.25rem;
+}
 
 .addBtnEmpty {
   padding: 0.75rem 1.5rem;
@@ -231,77 +308,80 @@
   border: none;
   border-radius: 12px;
   color: #fff;
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   transition: opacity 0.2s, transform 0.15s;
 }
 
-.addBtnEmpty:hover { opacity: 0.9; transform: translateY(-1px); }
+.addBtnEmpty:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
 
-/* Spinner */
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(167, 139, 250, 0.2);
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
   border-top-color: #a78bfa;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 1rem;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 /* ============================================================
-   Responsividade Mobile – Dashboard
+   Responsividade Mobile (<= 768px)
    ============================================================ */
 @media (max-width: 768px) {
-  .dashboard {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
-
   .main {
-    padding: 0.75rem 0.6rem calc(5rem + env(safe-area-inset-bottom, 0px));
+    padding: 1rem 0.85rem 5.5rem;
     width: 100%;
     max-width: 100%;
-    min-width: 0;
     box-sizing: border-box;
   }
 
   .statsBar {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.45rem;
+    gap: 0.5rem;
     width: 100%;
     box-sizing: border-box;
   }
 
   .stat {
     min-width: 0 !important;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.75rem 0.45rem;
+    width: 100% !important;
+    padding: 0.75rem 0.5rem;
     border-radius: 12px;
   }
 
-  /* O último stat (Média) ocupa as duas colunas para fechamento harmonioso */
   .stat:last-child {
     grid-column: span 2;
   }
 
   .statNumber {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 
   .statLabel {
     font-size: 0.68rem;
   }
 
+  /* Controls totalmente fluídos em coluna e grid sem estufamento */
   .controls {
     flex-direction: column;
     align-items: stretch;
@@ -342,17 +422,10 @@
     box-sizing: border-box;
   }
 
-  /* O botão + Adicionar ganha destaque de largura total no mobile */
+  /* No mobile, o botão + Adicionar dentro dos filtros é ocultado
+     porque já temos o botão de destaque no topo E o botão flutuante (FAB) */
   .addBtn {
-    grid-column: span 2;
-    width: 100% !important;
-    padding: 0.75rem 1rem;
-    font-size: 0.92rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    box-sizing: border-box;
+    display: none !important;
   }
 
   .grid {
@@ -367,7 +440,7 @@
   }
 }
 
-@media (max-width: 340px) {
+@media (max-width: 360px) {
   .statsBar {
     grid-template-columns: 1fr;
   }
@@ -380,9 +453,12 @@
     grid-template-columns: 1fr;
   }
 
-  .addBtn {
-    grid-column: span 1;
+  .fabBtn .fabLabel {
+    display: none;
+  }
+
+  .fabBtn {
+    padding: 0.85rem;
+    border-radius: 50%;
   }
 }
-
-

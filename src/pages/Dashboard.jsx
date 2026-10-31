@@ -9,7 +9,6 @@ import {
 import EntryModal from "../components/EntryModal";
 import EntryCard from "../components/EntryCard";
 import Navbar from "../components/Navbar";
-import BottomNav from "../components/BottomNav";
 import styles from "./Dashboard.module.css";
 
 const GENRES = ["Ação", "Comédia", "Drama", "Terror", "Romance", "Sci-Fi", "Animação", "Documentário", "Suspense", "Fantasia"];
@@ -187,6 +186,18 @@ export default function Dashboard() {
           </div>
         </section>
 
+        {/* Barra de Ação de Destaque (Acesso Rápido antes dos filtros) */}
+        <div className={styles.topActionBar}>
+          <button
+            id="btn-add-entry-top"
+            className={styles.primaryAddBtn}
+            onClick={openNew}
+          >
+            <span className={styles.primaryAddIcon} aria-hidden="true">✨</span>
+            <span>+ Novo Filme ou Série</span>
+          </button>
+        </div>
+
         {/* Filters & Search */}
         <section className={styles.controls} aria-label="Filtros">
           {/* Filtro MoodFilm antes da busca por título */}
@@ -327,18 +338,17 @@ export default function Dashboard() {
         )}
       </main>
 
-      {modalOpen && (
-        <EntryModal
-          entry={editingEntry}
-          genres={allGenres}
-          statusOptions={STATUS_OPTIONS}
-          moodOptions={MOOD_OPTIONS}
-          onSave={handleSave}
-          onClose={() => { setModalOpen(false); setEditingEntry(null); }}
-        />
-      )}
-
-      <BottomNav />
+      {/* Botão Flutuante de Ação Rápida (FAB - Mobile) */}
+      <button
+        id="btn-fab-add"
+        className={styles.fabBtn}
+        onClick={openNew}
+        aria-label="Adicionar novo filme ou série"
+        title="Adicionar filme ou série"
+      >
+        <span className={styles.fabIcon} aria-hidden="true">➕</span>
+        <span className={styles.fabLabel}>Novo Filme</span>
+      </button>
     </div>
   );
 }

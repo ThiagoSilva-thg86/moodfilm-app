@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserEntries } from "../services/entriesService";
 import Navbar from "../components/Navbar";
-import BottomNav from "../components/BottomNav";
 import { formatScore } from "../constants/technicalCriteria";
 import styles from "./Analytics.module.css";
 
@@ -663,7 +662,6 @@ export default function Analytics() {
           </div>
         )}
       </main>
-      <BottomNav />
     </div>
   );
 }

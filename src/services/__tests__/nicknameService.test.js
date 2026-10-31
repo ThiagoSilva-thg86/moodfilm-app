@@ -26,8 +26,9 @@ describe("nicknameService", () => {
   });
 
   describe("normalizeNickname", () => {
-    it("deve converter para letras minúsculas e remover espaços laterais", () => {
+    it("deve converter para letras minúsculas, remover espaços laterais e converter espaços internos para '_'", () => {
       expect(normalizeNickname("  Thiago  ")).toBe("thiago");
+      expect(normalizeNickname("Tt MF")).toBe("tt_mf");
       expect(normalizeNickname("Cinefilo_86")).toBe("cinefilo_86");
       expect(normalizeNickname("MARLON-BRANDO")).toBe("marlon-brando");
     });
@@ -40,8 +41,9 @@ describe("nicknameService", () => {
   });
 
   describe("validateNicknameFormat", () => {
-    it("deve aprovar apelidos com tamanho entre 3 e 20 caracteres válidos", () => {
+    it("deve aprovar apelidos com tamanho entre 3 e 20 caracteres válidos, incluindo espaços simples", () => {
       expect(validateNicknameFormat("thiago").valid).toBe(true);
+      expect(validateNicknameFormat("Tt MF").valid).toBe(true);
       expect(validateNicknameFormat("cine_filo").valid).toBe(true);
       expect(validateNicknameFormat("joao-10").valid).toBe(true);
     });
@@ -58,10 +60,10 @@ describe("nicknameService", () => {
       expect(res.error).toContain("no máximo 20 caracteres");
     });
 
-    it("deve rejeitar apelidos com espaços ou caracteres especiais proibidos", () => {
-      expect(validateNicknameFormat("thi ago").valid).toBe(false);
+    it("deve rejeitar apelidos com caracteres especiais proibidos ou múltiplos espaços", () => {
       expect(validateNicknameFormat("thi@cinema").valid).toBe(false);
       expect(validateNicknameFormat("user#123").valid).toBe(false);
+      expect(validateNicknameFormat("Tt  MF").valid).toBe(false);
     });
   });
 

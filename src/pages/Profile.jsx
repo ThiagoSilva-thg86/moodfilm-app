@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { isNicknameAvailable, validateNicknameFormat } from "../services/nicknameService";
 import Navbar from "../components/Navbar";
-import BottomNav from "../components/BottomNav";
 import styles from "./Profile.module.css";
 
 // Componente auxiliar de Input com botão do Olhinho (mostrar/ocultar senha)
@@ -414,7 +413,6 @@ export default function Profile() {
 
         </div>
       </main>
-      <BottomNav />
     </div>
   );
 }
