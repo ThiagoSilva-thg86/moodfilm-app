@@ -116,6 +116,8 @@ export default function Dashboard() {
     setFiltered(result);
   }, [entries, filters, sortBy]);
 
+  const [modalMode, setModalMode] = useState("view"); // "view" | "edit" | "create"
+
   async function handleSave(data) {
     if (data.genres && data.genres.length > 0) {
       saveCustomGenres(data.genres);
@@ -137,13 +139,21 @@ export default function Dashboard() {
     }
   }
 
+  function handleSelectEntry(entry) {
+    setEditingEntry(entry);
+    setModalMode("view");
+    setModalOpen(true);
+  }
+
   function openEdit(entry) {
     setEditingEntry(entry);
+    setModalMode("edit");
     setModalOpen(true);
   }
 
   function openNew() {
     setEditingEntry(null);
+    setModalMode("create");
     setModalOpen(true);
   }
 
@@ -330,13 +340,35 @@ export default function Dashboard() {
               <EntryCard
                 key={entry.id}
                 entry={entry}
-                onEdit={() => openEdit(entry)}
+                onSelect={handleSelectEntry}
+                onEdit={() => handleSelectEntry(entry)}
                 onDelete={() => handleDelete(entry.id)}
               />
             ))}
           </div>
         )}
       </main>
+
+      {/* Modal de Detalhes / Edição / Criação */}
+      {modalOpen && (
+        <EntryModal
+          entry={editingEntry}
+          initialMode={modalMode}
+          genres={allGenres}
+          statusOptions={STATUS_OPTIONS}
+          moodOptions={MOOD_OPTIONS}
+          onSave={handleSave}
+          onDelete={async (id) => {
+            setModalOpen(false);
+            setEditingEntry(null);
+            await handleDelete(id);
+          }}
+          onClose={() => {
+            setModalOpen(false);
+            setEditingEntry(null);
+          }}
+        />
+      )}
 
       {/* Botão Flutuante de Ação Rápida (FAB - Mobile) */}
       <button

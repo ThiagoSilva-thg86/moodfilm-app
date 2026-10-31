@@ -28,7 +28,20 @@ export const ANIMATION_TYPES = [
   },
 ];
 
-export default function EntryModal({ entry, genres, statusOptions, moodOptions, onSave, onClose }) {
+export default function EntryModal({
+  entry,
+  initialMode = "view",
+  genres,
+  statusOptions,
+  moodOptions,
+  onSave,
+  onDelete,
+  onClose,
+}) {
+  const [isEditing, setIsEditing] = useState(() => {
+    if (!entry) return true; // nova entrada abre direto no modo edição
+    return initialMode === "edit";
+  });
   const [form, setForm] = useState({
     title: "",
     type: "Filme",
@@ -290,17 +303,215 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
   const reviewLeft = MAX_REVIEW - form.review.length;
   const reviewNearLimit = reviewLeft <= 50;
 
+  const coverImg = seriesData?.poster || seriesData?.backdrop || null;
+  const techScore = calcTechnicalScore(form.technicalRatings);
+
   return (
     <div className={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className={styles.modal} role="dialog" aria-modal="true" aria-label={entry ? "Editar entrada" : "Nova entrada"}>
+      <div
+        className={styles.modal}
+        role="dialog"
+        aria-modal="true"
+        aria-label={entry ? (isEditing ? "Editar entrada" : "Detalhes da entrada") : "Nova entrada"}
+      >
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>
-            {entry ? "✏️ Editar" : "➕ Adicionar"} {form.type}
-          </h2>
-          <button id="btn-modal-close" className={styles.closeBtn} onClick={onClose} aria-label="Fechar">✕</button>
+          <div className={styles.modalHeaderTitleGroup}>
+            <span className={styles.modalTypePill}>
+              {form.type === "Filme" ? "🎥 Filme" : "📺 Série"}
+            </span>
+            <h2 className={styles.modalTitle}>
+              {!entry
+                ? "➕ Adicionar Título"
+                : isEditing
+                ? `✏️ Editar: ${form.title || entry.title}`
+                : (form.title || entry.title)}
+            </h2>
+          </div>
+
+          <div className={styles.modalHeaderActions}>
+            {entry && (
+              <button
+                type="button"
+                id="btn-modal-edit"
+                className={`${styles.iconActionBtn} ${isEditing ? styles.iconActionActive : ""}`}
+                onClick={() => setIsEditing(!isEditing)}
+                title={isEditing ? "Voltar à visualização" : "Editar informações"}
+                aria-label={isEditing ? "Cancelar edição" : "Editar"}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </button>
+            )}
+
+            {entry && onDelete && (
+              <button
+                type="button"
+                id="btn-modal-delete"
+                className={`${styles.iconActionBtn} ${styles.iconDeleteBtn}`}
+                onClick={() => {
+                  if (window.confirm(`Deseja realmente excluir "${entry.title}"?`)) {
+                    onDelete(entry.id);
+                  }
+                }}
+                title="Excluir este título"
+                aria-label="Excluir"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+              </button>
+            )}
+
+            <button
+              type="button"
+              id="btn-modal-close"
+              className={styles.closeBtn}
+              onClick={onClose}
+              aria-label="Fechar"
+              title="Fechar"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        {/* ========================================================
+            MODO VISUALIZAÇÃO EXPANDIDA (Read-Only)
+        ======================================================== */}
+        {!isEditing && entry && (
+          <div className={styles.viewContent}>
+            {coverImg && (
+              <div className={styles.viewCoverBanner}>
+                <div
+                  className={styles.viewCoverBlur}
+                  style={{ backgroundImage: `url(${coverImg})` }}
+                  aria-hidden="true"
+                />
+                <img src={coverImg} alt={entry.title} className={styles.viewCoverImg} />
+                <div className={styles.viewCoverBadgeRow}>
+                  {form.rating > 0 && (
+                    <div className={styles.viewCoverRatingBadge}>
+                      ⭐ {formatScore(form.rating)}/10 Feeling
+                    </div>
+                  )}
+                  {seriesData?.voteAverage > 0 && (
+                    <div className={styles.viewCoverTmdbBadge}>
+                      TMDB {Number(seriesData.voteAverage).toFixed(1)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.viewBody}>
+              {/* Badges de Status e Gêneros */}
+              <div className={styles.viewMetaRow}>
+                <span className={styles.viewStatusBadge}>
+                  {form.status}
+                </span>
+                {form.genres.map((g, idx) => (
+                  <span key={idx} className={styles.viewGenreBadge}>{g}</span>
+                ))}
+                {form.animationType && (
+                  <span className={styles.viewAnimBadge}>🎨 Nicho {form.animationType}</span>
+                )}
+              </div>
+
+              {/* Informações de notas: Feeling e Técnica */}
+              <div className={styles.viewRatingsGrid}>
+                <div className={styles.viewRatingBox}>
+                  <span className={styles.viewRatingLabel}>💜 Feeling (Sua Nota)</span>
+                  <strong className={styles.viewRatingNum}>
+                    {form.rating > 0 ? `${formatScore(form.rating)} / 10` : "Não avaliado"}
+                  </strong>
+                </div>
+                <div className={styles.viewRatingBox}>
+                  <span className={styles.viewRatingLabel}>🎬 Nota Técnica Geral</span>
+                  <strong className={styles.viewRatingNum}>
+                    {techScore != null ? `${formatScore(techScore)} / 5 ★` : "Não avaliado"}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Critérios Técnicos Detalhados */}
+              <div className={styles.viewTechDetails}>
+                <div className={styles.viewSubTitle}>Critérios Técnicos Detalhados</div>
+                <div className={styles.viewCriteriaGrid}>
+                  {TECHNICAL_CRITERIA.map((crit) => {
+                    const score = form.technicalRatings[crit.key] || 0;
+                    return (
+                      <div key={crit.key} className={styles.viewCriteriaItem}>
+                        <span className={styles.critName}>{crit.emoji} {crit.name}</span>
+                        <strong className={styles.critScore}>{score > 0 ? `${formatScore(score)} ★` : "—"}</strong>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Informações TMDB: Duração, Temporadas, Sinopse */}
+              {seriesData && (
+                <div className={styles.viewTmdbBox}>
+                  <div className={styles.viewTmdbMetaRow}>
+                    {seriesData.runtime > 0 && <span>⏱ {Math.floor(seriesData.runtime / 60)}h {seriesData.runtime % 60}min</span>}
+                    {seriesData.totalSeasons > 0 && <span>📺 {seriesData.totalSeasons} Temporadas · {seriesData.totalEpisodes} Episódios</span>}
+                    {seriesData.status && <span>Status: {seriesData.status}</span>}
+                  </div>
+                  {seriesData.overview && (
+                    <p className={styles.viewOverview}>{seriesData.overview}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Sentimentos (MoodFilm) */}
+              {form.moods.length > 0 && (
+                <div className={styles.viewMoodBox}>
+                  <div className={styles.viewSubTitle}>Sentimento MoodFilm</div>
+                  <div className={styles.viewMoodTags}>
+                    {form.moods.map((m, idx) => (
+                      <span key={idx} className={idx === 0 ? styles.viewMoodTagPrimary : styles.viewMoodTagSecondary}>
+                        {idx === 0 ? "⭐ " : ""}{m}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Resenha Pessoal */}
+              {form.review && (
+                <div className={styles.viewReviewBox}>
+                  <div className={styles.viewSubTitle}>Sua Resenha</div>
+                  <blockquote className={styles.viewReviewQuote}>"{form.review}"</blockquote>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.viewFooter}>
+              <button type="button" className={styles.cancelBtn} onClick={onClose}>
+                Fechar
+              </button>
+              <button
+                type="button"
+                id="btn-view-edit"
+                className={styles.saveBtn}
+                onClick={() => setIsEditing(true)}
+              >
+                ✏️ Editar Informações
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            MODO FORMULÁRIO DE EDIÇÃO / CRIAÇÃO
+        ======================================================== */}
+        {isEditing && (
+          <form onSubmit={handleSubmit} className={styles.form}>
           {/* Title — busca TMDB para Filme e Série */}
           <div className={styles.field} style={{ position: "relative" }}>
             <label htmlFor="modal-title">
@@ -730,7 +941,12 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
           </div>
 
           <div className={styles.formActions}>
-            <button type="button" id="btn-modal-cancel" className={styles.cancelBtn} onClick={onClose}>
+            <button
+              type="button"
+              id="btn-modal-cancel"
+              className={styles.cancelBtn}
+              onClick={entry ? () => setIsEditing(false) : onClose}
+            >
               Cancelar
             </button>
             <button type="submit" id="btn-modal-save" className={styles.saveBtn} disabled={saving || !form.title.trim()}>
@@ -738,6 +954,7 @@ export default function EntryModal({ entry, genres, statusOptions, moodOptions, 
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   );

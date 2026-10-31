@@ -6,9 +6,21 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-  cursor: default;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
   overflow: hidden;
+  user-select: none;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(167, 139, 250, 0.45);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.18);
+}
+
+.card:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
 }
 
 /* Container da capa da produção — mantém a capa inteira (sem cortar) e notas sobrepostas */
@@ -526,6 +538,33 @@
 .deleteBtn:hover {
   background: rgba(239, 68, 68, 0.18);
   transform: translateY(-1px);
+}
+
+.cardFooterHint {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: rgba(167, 139, 250, 0.75);
+  transition: all 0.2s ease;
+}
+
+.card:hover .cardFooterHint {
+  color: #c4b5fd;
+}
+
+.cardHintIcon {
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.card:hover .cardHintIcon {
+  transform: translate(2px, -2px);
 }
 
 /* ============================================================

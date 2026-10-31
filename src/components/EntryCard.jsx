@@ -7,7 +7,12 @@ const STATUS_COLORS = {
   "Quero assistir": { bg: "rgba(245,158,11,0.15)", text: "#fcd34d", border: "rgba(245,158,11,0.3)" },
 };
 
-export default function EntryCard({ entry, onEdit, onDelete }) {
+export default function EntryCard({ entry, onSelect, onEdit, onDelete }) {
+  const handleCardClick = () => {
+    if (onSelect) onSelect(entry);
+    else if (onEdit) onEdit(entry);
+  };
+
   const statusStyle = STATUS_COLORS[entry.status] || {};
 
   // Suporte a formato antigo (string) e novo (array)
@@ -52,7 +57,19 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
   }
 
   return (
-    <article className={styles.card}>
+    <article
+      className={styles.card}
+      onClick={handleCardClick}
+      tabIndex={0}
+      role="button"
+      aria-label={`Ver detalhes de ${entry.title}`}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
+    >
       {/* Capa da produção por completo + Notas */}
       {coverImg && (
         <div className={styles.coverContainer}>
@@ -234,13 +251,10 @@ export default function EntryCard({ entry, onEdit, onDelete }) {
         <p className={styles.review}>{entry.review}</p>
       )}
 
-      <div className={styles.actions}>
-        <button id={`btn-edit-${entry.id}`} className={styles.editBtn} onClick={onEdit}>
-          ✏️ Editar
-        </button>
-        <button id={`btn-delete-${entry.id}`} className={styles.deleteBtn} onClick={onDelete}>
-          🗑️ Excluir
-        </button>
+      {/* Dica sutil de clique para expandir os detalhes completos */}
+      <div className={styles.cardFooterHint}>
+        <span className={styles.cardHintText}>Toque para ver detalhes</span>
+        <span className={styles.cardHintIcon} aria-hidden="true">↗</span>
       </div>
     </article>
   );

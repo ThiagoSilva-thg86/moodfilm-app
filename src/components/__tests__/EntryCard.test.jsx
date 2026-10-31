@@ -16,35 +16,31 @@ describe("EntryCard Component", () => {
     year: "2001",
   };
 
-  it("deve renderizar o título, nota feeling e humor principal", () => {
-    render(<EntryCard entry={mockEntry} onEdit={vi.fn()} onDelete={vi.fn()} />);
+  it("deve renderizar o título, nota feeling, humor principal e dica para ver detalhes", () => {
+    render(<EntryCard entry={mockEntry} onSelect={vi.fn()} />);
 
     expect(screen.getByText("O Senhor dos Anéis")).toBeInTheDocument();
     expect(screen.getByText("9.8")).toBeInTheDocument();
     expect(screen.getByText(/Obra-prima/i)).toBeInTheDocument();
     expect(screen.getByText(/Filme/i)).toBeInTheDocument();
     expect(screen.getByText("Assistido")).toBeInTheDocument();
+    expect(screen.getByText(/Toque para ver detalhes/i)).toBeInTheDocument();
   });
 
-  it("deve disparar os callbacks de editar e excluir ao clicar nos respectivos botões", () => {
-    const handleEdit = vi.fn();
-    const handleDelete = vi.fn();
+  it("deve disparar o callback onSelect ao clicar no card", () => {
+    const handleSelect = vi.fn();
 
     render(
       <EntryCard
         entry={mockEntry}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onSelect={handleSelect}
       />
     );
 
-    const editBtn = screen.getByRole("button", { name: /Editar/i });
-    const deleteBtn = screen.getByRole("button", { name: /Excluir/i });
+    const card = screen.getByRole("button", { name: /Ver detalhes de O Senhor dos Anéis/i });
+    fireEvent.click(card);
 
-    fireEvent.click(editBtn);
-    expect(handleEdit).toHaveBeenCalledTimes(1);
-
-    fireEvent.click(deleteBtn);
-    expect(handleDelete).toHaveBeenCalledTimes(1);
+    expect(handleSelect).toHaveBeenCalledTimes(1);
+    expect(handleSelect).toHaveBeenCalledWith(mockEntry);
   });
 });
