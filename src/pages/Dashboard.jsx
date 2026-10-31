@@ -145,12 +145,6 @@ export default function Dashboard() {
     setModalOpen(true);
   }
 
-  function openEdit(entry) {
-    setEditingEntry(entry);
-    setModalMode("edit");
-    setModalOpen(true);
-  }
-
   function openNew() {
     setEditingEntry(null);
     setModalMode("create");
@@ -304,10 +298,6 @@ export default function Dashboard() {
               <option value="techScore">Melhor Nota Técnica (0–5)</option>
               <option value="title">A–Z</option>
             </select>
-
-            <button id="btn-add-entry" className={styles.addBtn} onClick={openNew}>
-              + Adicionar
-            </button>
           </div>
         </section>
 

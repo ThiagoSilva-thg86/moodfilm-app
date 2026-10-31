@@ -31,6 +31,8 @@ describe("nicknameService", () => {
       expect(normalizeNickname("Tt MF")).toBe("tt_mf");
       expect(normalizeNickname("Cinefilo_86")).toBe("cinefilo_86");
       expect(normalizeNickname("MARLON-BRANDO")).toBe("marlon-brando");
+      expect(normalizeNickname("Thiagão")).toBe("thiagao");
+      expect(normalizeNickname("João & Maria")).toBe("joao_&_maria");
     });
 
     it("deve retornar string vazia para valores nulos ou inválidos", () => {

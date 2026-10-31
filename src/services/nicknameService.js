@@ -13,7 +13,12 @@ import { db } from "../firebase/config";
  */
 export function normalizeNickname(nickname) {
   if (!nickname || typeof nickname !== "string") return "";
-  return nickname.trim().toLowerCase().replace(/\s+/g, "_");
+  return nickname
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_");
 }
 
 /**

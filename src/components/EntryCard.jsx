@@ -7,7 +7,7 @@ const STATUS_COLORS = {
   "Quero assistir": { bg: "rgba(245,158,11,0.15)", text: "#fcd34d", border: "rgba(245,158,11,0.3)" },
 };
 
-export default function EntryCard({ entry, onSelect, onEdit, onDelete }) {
+export default function EntryCard({ entry, onSelect, onEdit }) {
   const handleCardClick = () => {
     if (onSelect) onSelect(entry);
     else if (onEdit) onEdit(entry);
