@@ -1,8 +1,16 @@
 # 🎬 MoodFilm
 
-**Diário pessoal de filmes e séries com registro de humor**
+**Diário pessoal de filmes e séries com registro de humor & Fórum em Tempo Real**
 
-App React Web com autenticação e dados privados por usuário, desenvolvido com Firebase Authentication + Firestore.
+App React Web moderno com autenticação, dados privados por usuário e sistema de fórum/chat em tempo real, desenvolvido com Firebase Authentication, Cloud Firestore e Firebase Realtime Database.
+
+---
+
+## 🔗 Links de Produção & Entrega
+
+- 🌐 **Aplicação no Netlify (Entrega Projeto de Extensão)**: [https://moodfilm-app.netlify.app](https://moodfilm-app.netlify.app)
+- 🚀 **Aplicação no Firebase Hosting**: [https://moodfilm-app.web.app](https://moodfilm-app.web.app)
+- 💻 **Repositório GitHub**: [https://github.com/ThiagoSilva-thg86/moodfilm-app](https://github.com/ThiagoSilva-thg86/moodfilm-app)
 
 ---
 
@@ -143,14 +151,22 @@ src/
 
 ---
 
-## ✅ Requisitos atendidos
+## ✅ Requisitos Atendidos
 
-- [x] **Autenticação**: Firebase Auth (e-mail/senha), cadastro, login e recuperação de senha
-- [x] **Persistência**: Firestore, coleção `entries` por usuário
-- [x] **Dados privados**: query filtrada por `userId == auth.uid` + regras Firestore
+### Projeto 1 — Diário Pessoal & Analytics
+- [x] **Autenticação**: Firebase Auth (e-mail/senha), cadastro com checagem de apelido único $O(1)$, login e recuperação de senha segura
+- [x] **Persistência**: Cloud Firestore, coleção `entries` com isolamento por usuário
+- [x] **Dados privados**: query filtrada por `userId == auth.uid` + regras de segurança Firestore
 - [x] **CRUD completo**: Criar, Listar, Editar e Excluir entradas
-- [x] **Interface funcional**: telas de cadastro, login, dashboard, analytics e perfil
-- [x] **Deploy em Produção**: Hospedagem ativa no Firebase Hosting
+- [x] **Interface funcional & Responsiva**: telas de cadastro, login, diário, analytics com 14 visões e perfil
+
+### Projeto de Extensão — Sistema de Chat / Fórum com Firebase Realtime Database
+- [x] **Fórum Cinéfilo em Tempo Real**: debates por tópicos temáticos (Geral, Recomendações, Teorias & Spoilers, Lançamentos, Animação)
+- [x] **Firebase Realtime Database**: sincronização instantânea via WebSockets com `onValue`, `push` e `set`
+- [x] **Chat em Tempo Real por Discussão**: mensagens transmitidas em milissegundos com identificação do criador do tópico e data relativa
+- [x] **Regras de Segurança RTDB**: regras declarativas no `database.rules.json` protegendo leitura e escrita apenas para usuários autenticados
+- [x] **Deploy no Netlify**: publicação contínua automática conectada ao GitHub com regras de reescrita SPA (`_redirects` e `netlify.toml`)
+- [x] **Qualidade & Testes**: 40 testes automatizados cobrindo serviços, regras de negócio e componentes visuais
 
 ### Funcionalidades extras
 - 🔑 Recuperação de senha segura (prevenção contra enumeração de e-mails / OWASP)
