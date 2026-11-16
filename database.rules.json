@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "topics": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["createdAt", "category"]
+    },
+    "comments": {
+      "$topicId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".indexOn": ["createdAt"]
+      }
+    }
+  }
+}

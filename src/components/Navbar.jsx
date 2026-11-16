@@ -61,6 +61,12 @@ export default function Navbar() {
               🎬 Diário
             </Link>
             <Link
+              to="/forum"
+              className={`${styles.navLink} ${location.pathname.startsWith("/forum") ? styles.navLinkActive : ""}`}
+            >
+              💬 Comunidade
+            </Link>
+            <Link
               to="/analytics"
               className={`${styles.navLink} ${location.pathname === "/analytics" ? styles.navLinkActive : ""}`}
             >
@@ -158,6 +164,18 @@ export default function Navbar() {
             <div className={styles.drawerLinkText}>
               <strong>Diário</strong>
               <small>Lista de filmes e séries assistidos</small>
+            </div>
+          </Link>
+
+          <Link
+            to="/forum"
+            className={`${styles.drawerLink} ${location.pathname.startsWith("/forum") ? styles.drawerLinkActive : ""}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className={styles.drawerIcon}>💬</span>
+            <div className={styles.drawerLinkText}>
+              <strong>Comunidade & Fórum</strong>
+              <small>Debates e bate-papo em tempo real</small>
             </div>
           </Link>
 

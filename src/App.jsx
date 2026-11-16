@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Profile from "./pages/Profile";
+import Forum from "./pages/Forum";
 
 export default function App() {
   return (
@@ -27,6 +28,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <Analytics />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/forum"
+            element={
+              <PrivateRoute>
+                <Forum />
               </PrivateRoute>
             }
           />
