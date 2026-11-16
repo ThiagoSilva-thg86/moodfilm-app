@@ -4,7 +4,9 @@
 // ============================================================
 
 const BASE_URL = "https://api.themoviedb.org/3";
-const READ_TOKEN = import.meta.env.VITE_TMDB_READ_TOKEN;
+const READ_TOKEN =
+  import.meta.env.VITE_TMDB_READ_TOKEN ||
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZjM3NjA3Y2ZiODEwZTQ4OTkwYWExODZiOTBhYjQ4YyIsIm5iZiI6MTc5MDk1NjE1Ni41NjQsInN1YiI6IjZhYmZkMjdjYjI2MzVlNDc0MTFkMzRlZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.10PFs1pBzP2ilKK_LDvf4N_6zSwxZtXtun7utVJiHmU";
 const IMG_BASE = "https://image.tmdb.org/t/p/w200";
 
 function authHeaders() {
