@@ -70,7 +70,7 @@ export default function Navbar() {
               to="/analytics"
               className={`${styles.navLink} ${location.pathname === "/analytics" ? styles.navLinkActive : ""}`}
             >
-              📊 Analytics
+              🍿 CinePerfil
             </Link>
           </div>
         </div>
@@ -184,10 +184,10 @@ export default function Navbar() {
             className={`${styles.drawerLink} ${location.pathname === "/analytics" ? styles.drawerLinkActive : ""}`}
             onClick={() => setMenuOpen(false)}
           >
-            <span className={styles.drawerIcon}>📊</span>
+            <span className={styles.drawerIcon}>🍿</span>
             <div className={styles.drawerLinkText}>
-              <strong>Analytics & Humor</strong>
-              <small>14 visões e estatísticas pessoais</small>
+              <strong>CinePerfil</strong>
+              <small>Seu raio-x de humor, hábitos e preferências</small>
             </div>
           </Link>
 

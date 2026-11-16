@@ -153,12 +153,12 @@ src/
 
 ## ✅ Requisitos Atendidos
 
-### Projeto 1 — Diário Pessoal & Analytics
+### Projeto 1 — Diário Pessoal & CinePerfil
 - [x] **Autenticação**: Firebase Auth (e-mail/senha), cadastro com checagem de apelido único $O(1)$, login e recuperação de senha segura
 - [x] **Persistência**: Cloud Firestore, coleção `entries` com isolamento por usuário
 - [x] **Dados privados**: query filtrada por `userId == auth.uid` + regras de segurança Firestore
 - [x] **CRUD completo**: Criar, Listar, Editar e Excluir entradas
-- [x] **Interface funcional & Responsiva**: telas de cadastro, login, diário, analytics com 14 visões e perfil
+- [x] **Interface funcional & Responsiva**: telas de cadastro, login, diário, comunidade, cineperfil (14 visões) e perfil
 
 ### Projeto de Extensão — Sistema de Chat / Fórum com Firebase Realtime Database
 - [x] **Fórum Cinéfilo em Tempo Real**: debates por tópicos temáticos (Geral, Recomendações, Teorias & Spoilers, Lançamentos, Animação)

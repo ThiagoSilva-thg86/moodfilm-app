@@ -226,9 +226,9 @@ export default function Analytics() {
             <div className={styles.breadcrumb}>
               <Link to="/" className={styles.backLink}>← Voltar ao Diário</Link>
             </div>
-            <h1 className={styles.title}>📊 Dashboard Analítico</h1>
+            <h1 className={styles.title}>🍿 CinePerfil</h1>
             <p className={styles.subtitle}>
-              Raio-X completo dos seus hábitos cinematográficos, humores e preferências
+              Sua identidade e hábitos cinéfilos: humores mais frequentes, preferências e raio-x audiovisual
             </p>
           </div>
           <button className={styles.refreshBtn} onClick={() => navigate("/")}>

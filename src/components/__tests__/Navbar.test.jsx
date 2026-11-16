@@ -43,6 +43,7 @@ describe("Navbar Component", () => {
     fireEvent.click(hamburger);
 
     expect(screen.getByText("NAVEGAÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("CinePerfil")).toBeInTheDocument();
     expect(screen.getByText("Meu Perfil")).toBeInTheDocument();
     expect(screen.getByText("thiago@teste.com")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /sair da conta/i })).toBeInTheDocument();
